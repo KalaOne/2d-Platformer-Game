@@ -20,6 +20,8 @@ int levelWidth = 50, levelHeight = 20;
 int oldStartTime = 0;
 int deltaTime;
 
+bool colliding = false;
+
 //OPENGL FUNCTION PROTOTYPES
 void display();				//called in winmain to draw everything to the screen
 void reshape(int width, int height);				//called when the window is resized
@@ -45,7 +47,7 @@ void drawLevel() {
 	int tileWidth = 50;
 	int tileHeight = 50;
 	
-	levelTexture += "@-----------------=--=-=-=-===--=-=--------------@";
+	levelTexture += "@-----------------=------=-===--=====------------@";
 	levelTexture += "@---=-------------=---------------=----------==--@";
 	levelTexture += "@---=-------------=----========---=-----------=--@";
 	levelTexture += "@---====----------=---------------=-----------=--@";
@@ -62,12 +64,12 @@ void drawLevel() {
 	levelTexture += "@---------=--------------------------------------@";
 	levelTexture += "@--------=-=-------------------------------------@";
 	levelTexture += "@-----===---=-----------------------=------------@";
-	levelTexture += "@----=-------=----------------------=------------@";
-	levelTexture += "@---=---------=---------------------=------====--@";
-	levelTexture += "@---=----------==-------------------=------=--=--@";//20
-	//try inversing the loop to get the right area. GEE GEE
-	for (int x = 0; x < levelWidth; x++) {
-		for (int y = 0; y < levelHeight; y++) {
+	levelTexture += "@k---=-------=----------------------=------------@";
+	levelTexture += "@-k--=---------=---------------------=------====-@";
+	levelTexture += "@--k=----------==-------------------=------=--=--@";//y=20,x=51
+//try inversing the loop to get the right area. GEE GEE
+	for (int y = 0 ; y < levelHeight; y++) {
+		for (int x = 0; x < levelWidth; x++) {
 			char tileID = getTile(x, y);
 			switch (tileID)
 			{
@@ -95,6 +97,38 @@ void drawLevel() {
 
 	}
 }
+
+void collision()
+{
+	int left_tile = player.posX / 50;
+	int right_tile= player.posX + 50 / 50;
+	int top_tile = player.posY + 50 / 50;
+	int bottom_tile = player.posY / 50;
+	
+	if (left_tile < 0)
+		left_tile = 0;
+	if (right_tile > levelWidth)
+		right_tile = levelWidth;
+	if (top_tile > levelHeight)
+		top_tile = levelHeight;
+	if (bottom_tile < 0)
+		bottom_tile = 0;
+	colliding = false;
+	for(int i = left_tile; i<=right_tile; i++)
+	{
+		for(int j = bottom_tile; j <= top_tile; j++)
+		{
+			char tile = getTile(i, j);
+			if(tile == '#')
+			{
+				colliding = true;
+				//cout << "Colliding." << endl;
+			}
+			colliding = false;
+		}
+	}
+}
+
 void gravity() {
 	if (player.posY > 0) {//if player is in the air, reduce velocity
 		player.velY -= 0.025;
@@ -174,6 +208,7 @@ void display()
 	glPointSize(10.0);
 	glColor3f(0, 1, 0);
 	player.drawEntity(deltaTime); //draw player polygon
+	collision();
 
 	glFlush();
 	glutSwapBuffers();

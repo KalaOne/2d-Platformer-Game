@@ -68,4 +68,5 @@ public:
 		glVertex2d(posX, posY + 50);//top left
 		glEnd();
 	}
+	
 };
