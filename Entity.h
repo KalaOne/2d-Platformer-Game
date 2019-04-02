@@ -14,7 +14,7 @@ public:
 	float newPosX, newPosY;
 
 	//Updating position of the entity
-	void updatePos() {
+	void updatePos(float deltaTime) {
 		if (velX > 6)
 			velX = 6;
 		if (velX < -6)
@@ -58,8 +58,8 @@ public:
 	}
 
 	//Draws entity
-	void drawEntity() {
-		updatePos();
+	void drawEntity(float deltaTime) {
+		updatePos(deltaTime);
 		//add texture to the polygon here.
 		glBegin(GL_POLYGON);
 		glVertex2d(posX, posY);	 //bottom left
