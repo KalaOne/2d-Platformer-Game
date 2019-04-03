@@ -5,11 +5,15 @@
 #include <chrono>
 #include <string>
 
-int levelWidth = 50, levelHeight = 20;
-int tileWidth = 50;
-int tileHeight = 50;
-std::string levelTexture = "";
-
-auto getTile(int x, int y);
-void drawLevel();
-
+class Level {
+private:
+	int levelWidth = 50, levelHeight = 20;
+	int tileWidth = 50;
+	int tileHeight = 50;
+	std::string levelTexture = "";
+	bool colliding = false;
+public:
+	char getTile(int x, int y);
+	void drawLevel();
+	void collision();
+};

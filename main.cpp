@@ -14,7 +14,6 @@ float camX = 0, camY = 0;
 int oldStartTime = 0;
 int deltaTime;
 
-bool colliding = false;
 
 //OPENGL FUNCTION PROTOTYPES
 void display();				//called in winmain to draw everything to the screen
@@ -26,17 +25,16 @@ void update();				//called in winmain to update variables
 
 
 Entity player(0,0);
+Level level1;
 
 
-
-
-void collision()
+void Level::collision()
 {
 	int left_tile = player.posX / 50;
-	int right_tile= player.posX + 50 / 50;
+	int right_tile = player.posX + 50 / 50;
 	int top_tile = player.posY + 50 / 50;
 	int bottom_tile = player.posY / 50;
-	
+
 	if (left_tile < 0)
 		left_tile = 0;
 	if (right_tile > levelWidth)
@@ -46,12 +44,12 @@ void collision()
 	if (bottom_tile < 0)
 		bottom_tile = 0;
 	colliding = false;
-	for(int i = left_tile; i<=right_tile; i++)
+	for (int i = left_tile; i <= right_tile; i++)
 	{
-		for(int j = bottom_tile; j <= top_tile; j++)
+		for (int j = bottom_tile; j <= top_tile; j++)
 		{
 			char tile = getTile(i, j);
-			if(tile == '#')
+			if (tile == '#')
 			{
 				colliding = true;
 				//cout << "Colliding." << endl;
@@ -133,14 +131,13 @@ void display()
 	deltaTime = startTime - oldStartTime;
 	oldStartTime = startTime;
 
-	
 	camera();
 	keyOperations();
-	drawLevel();
+	level1.drawLevel();
 	glPointSize(10.0);
 	glColor3f(0, 1, 0);
 	player.drawEntity(deltaTime); //draw player polygon
-	collision();
+	//collision();
 
 	glFlush();
 	glutSwapBuffers();

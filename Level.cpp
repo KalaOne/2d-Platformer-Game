@@ -1,6 +1,6 @@
 #include "Level.h"
 
-auto getTile(int x, int y) {
+inline char Level::getTile(int x, int y) {
 	if (x >= 0 && x <= levelWidth && y >= 0 && y <= levelHeight) {
 		//if the position is in bounds of the level
 		//return corresponding tile
@@ -10,7 +10,7 @@ auto getTile(int x, int y) {
 		return ' ';
 }
 
-void drawLevel() {
+void Level::drawLevel() {
 	levelTexture += "@-----------------=------=-===--=====------------@";
 	levelTexture += "@---=-------------=---------------=----------==--@";
 	levelTexture += "@---=-------------=----========---=-----------=--@";

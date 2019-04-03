@@ -1,4 +1,5 @@
 #include "Entity.h"
+#include "Level.h"
 
 
 //Updating position of the entity
@@ -47,3 +48,4 @@ void Entity::drawEntity(float deltaTime) {
 	glVertex2d(posX, posY + 50);//top left
 	glEnd();
 }
+

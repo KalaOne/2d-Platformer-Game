@@ -12,6 +12,7 @@ public:
 	bool lPressed = false;
 	bool rPressed = false;
 	float newPosX, newPosY;
+	bool colliding = false;
 
 	//Constructor for positioning the entity
 	Entity() {
@@ -26,4 +27,5 @@ public:
 
 	void updatePos(float deltaTime);
 	void drawEntity(float deltaTime);
+
 };
