@@ -1,12 +1,8 @@
 //includes areas for keyboard control, mouse control, resizing the window
 //and draws a spinning rectangle
 
-#include "GL\freeglut.h"
-#include <math.h>
-#include <iostream>
-#include <chrono>
-#include <string>
 #include "Entity.h"
+#include "Level.h"
 
 
 using namespace std;
@@ -15,8 +11,6 @@ int screenWidth=720, screenHeight=480;
 bool* keyStates = new bool[256];
 float grav = 0;
 float camX = 0, camY = 0;
-string levelTexture = "";
-int levelWidth = 50, levelHeight = 20;
 int oldStartTime = 0;
 int deltaTime;
 
@@ -33,70 +27,8 @@ void update();				//called in winmain to update variables
 
 Entity player(0,0);
 
-auto getTile(int x, int y) {
-	if (x >= 0 && x <= levelWidth && y >= 0 && y <= levelHeight) {
-		//if the position is in bounds of the level
-		//return corresponding tile
-		return levelTexture[y * levelWidth + x];
-	}
-	else
-		return ' ';
-}
 
-void drawLevel() {
-	int tileWidth = 50;
-	int tileHeight = 50;
-	
-	levelTexture += "@-----------------=------=-===--=====------------@";
-	levelTexture += "@---=-------------=---------------=----------==--@";
-	levelTexture += "@---=-------------=----========---=-----------=--@";
-	levelTexture += "@---====----------=---------------=-----------=--@";
-	levelTexture += "@------------------------------------------------@";
-	levelTexture += "@------------------------------------------------@";
-	levelTexture += "@------------------------------------------------@";
-	levelTexture += "@--------------==--------------------------------@";
-	levelTexture += "@-------------=--=-------------------------------@";
-	levelTexture += "@--------------==--------------------------------@";
-	levelTexture += "@------------------------------------------------@";
-	levelTexture += "@------------------------------------------------@";
-	levelTexture += "@------------------------------------------------@";
-	levelTexture += "@------------------------------------------------@";
-	levelTexture += "@---------=--------------------------------------@";
-	levelTexture += "@--------=-=-------------------------------------@";
-	levelTexture += "@-----===---=-----------------------=------------@";
-	levelTexture += "@k---=-------=----------------------=------------@";
-	levelTexture += "@-k--=---------=---------------------=------====-@";
-	levelTexture += "@--k=----------==-------------------=------=--=--@";//y=20,x=51
-//try inversing the loop to get the right area. GEE GEE
-	for (int y = 0 ; y < levelHeight; y++) {
-		for (int x = 0; x < levelWidth; x++) {
-			char tileID = getTile(x, y);
-			switch (tileID)
-			{
-			case '=':
-				glColor3f(0.5, 0.2, 0.3);
-				glBegin(GL_POLYGON);
-				glVertex2d(x * tileWidth, y * tileHeight);
-				glVertex2d(x * tileWidth + tileWidth, y * tileHeight);
-				glVertex2d(x * tileWidth + tileWidth, y * tileHeight + tileHeight);
-				glVertex2d(x * tileWidth, y * tileHeight + tileHeight);
-				glEnd();
-				break;
 
-			case '@':
-				glColor3f(0, 0.35, 0.86);
-				glBegin(GL_POLYGON);
-				glVertex2d(x * tileWidth, y * tileHeight);
-				glVertex2d(x * tileWidth + tileWidth, y * tileHeight);
-				glVertex2d(x * tileWidth + tileWidth, y * tileHeight + tileHeight);
-				glVertex2d(x * tileWidth, y * tileHeight + tileHeight);
-				glEnd();
-				break;
-			}
-		}
-
-	}
-}
 
 void collision()
 {
