@@ -25,36 +25,40 @@ void update();				//called in winmain to update variables
 
 
 Entity player(0,0);
-Level level1;
+Level level;
 
-
+//Over here! This thing can't be in either level or entity class since it uses
+//both classes' variables. Ask for help perhaps?
 void Level::collision()
 {
-	int left_tile = player.posX / 50;
-	int right_tile = player.posX + 50 / 50;
-	int top_tile = player.posY + 50 / 50;
-	int bottom_tile = player.posY / 50;
+	int left_tile = player.posX / level.tileWidth;
+	int right_tile = player.posX + 50 / level.tileWidth;
+	//not sure if it starts topleft or bottom-leff
+	//presuming it starts top-left, hence adding "1 unit(50)" to bottom
+	int top_tile = player.posY / level.tileHeight;
+	int bottom_tile = player.posY + 50 / level.tileHeight;
 
 	if (left_tile < 0)
 		left_tile = 0;
-	if (right_tile > levelWidth)
-		right_tile = levelWidth;
-	if (top_tile > levelHeight)
-		top_tile = levelHeight;
+	if (right_tile > level.levelWidth)
+		right_tile = level.levelWidth;
+	if (top_tile > level.levelHeight)
+		top_tile = level.levelHeight;
 	if (bottom_tile < 0)
 		bottom_tile = 0;
 	colliding = false;
-	for (int i = left_tile; i <= right_tile; i++)
+	for (int x = left_tile; x<= right_tile; x++)
 	{
-		for (int j = bottom_tile; j <= top_tile; j++)
+//possibly add separate collision for X and Y
+		for (int y = top_tile; y <= bottom_tile; y++)
 		{
-			char tile = getTile(i, j);
-			if (tile == '#')
+			char tile = getTile(x, y);
+			if (tile == 'm') // THIS IS ALWAYS TRIGGERED!!!!!
 			{
 				colliding = true;
 				//cout << "Colliding." << endl;
 			}
-			colliding = false;
+			
 		}
 	}
 }
@@ -77,13 +81,16 @@ void camera() {
 	//clamping camera
 	if (camX <= 0) camX = 0;
 	if (camY <= 0) camY = 0;
-//these dont look right.
-	/*if (camX >= screenWidth) {
-		camX = screenWidth / 2 - player.posX;
+
+	//2500 is level Width * tile size (50*50)
+	//1000 is level Height * tile size (20*50)
+//ASK IF THIS IS OKAY TO HARDCODE 1780 INSTEAD OF CALCULATING IT
+	if (camX >= level.getLevelWidth() * level.getTileWidth() - screenWidth) {
+		camX = level.getLevelWidth() * level.getTileWidth() - screenWidth;
 	}
-	if (camY >= screenHeight) {
-		camY = screenHeight / 2 - player.posY;
-	}*/
+	if (camY >= level.getLevelHeight() * level.getTileHeight() - screenHeight) {
+		camY = level.getLevelHeight() * level.getTileHeight() - screenHeight;
+	}
 
 	glTranslatef(-camX, -camY, 0);
 }
@@ -133,11 +140,11 @@ void display()
 
 	camera();
 	keyOperations();
-	level1.drawLevel();
+	level.drawLevel(1);
 	glPointSize(10.0);
 	glColor3f(0, 1, 0);
 	player.drawEntity(deltaTime); //draw player polygon
-	//collision();
+	level.collision();
 
 	glFlush();
 	glutSwapBuffers();

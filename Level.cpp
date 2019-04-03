@@ -10,7 +10,7 @@ inline char Level::getTile(int x, int y) {
 		return ' ';
 }
 
-void Level::drawLevel() {
+void Level::drawLevel(int level) {
 	levelTexture += "@-----------------=------=-===--=====------------@";
 	levelTexture += "@---=-------------=---------------=----------==--@";
 	levelTexture += "@---=-------------=----========---=-----------=--@";
@@ -32,8 +32,8 @@ void Level::drawLevel() {
 	levelTexture += "@-k--=---------=---------------------=------====-@";
 	levelTexture += "@--k=----------==-------------------=------=--=--@";//y=20,x=51
 //try inversing the loop to get the right area. GEE GEE
-	for (int y = 0; y < levelHeight; y++) {
-		for (int x = 0; x < levelWidth; x++) {
+	for (int x = 0; x < levelWidth; x++) {
+		for (int y = 0; y < levelHeight; y++) {
 			char tileID = getTile(x, y);
 			switch (tileID)
 			{

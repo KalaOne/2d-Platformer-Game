@@ -13,7 +13,23 @@ private:
 	std::string levelTexture = "";
 	bool colliding = false;
 public:
+	int getLevelWidth()
+	{
+		return levelWidth;
+	}
+	int getLevelHeight()
+	{
+		return levelHeight;
+	}
+	int getTileWidth()
+	{
+		return tileWidth;
+	}
+	int getTileHeight()
+	{
+		return tileHeight;
+	}
 	char getTile(int x, int y);
-	void drawLevel();
+	void drawLevel(int level);
 	void collision();
 };

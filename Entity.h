@@ -27,5 +27,5 @@ public:
 
 	void updatePos(float deltaTime);
 	void drawEntity(float deltaTime);
-
+	void collision();
 };
