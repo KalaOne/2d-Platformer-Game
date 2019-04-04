@@ -5,15 +5,15 @@
 //Updating position of the entity
 void Entity::updatePos(float deltaTime) {
 	collisionResponse();
-	if (velXR > 6)
-		velXR = 6;
-	if (velXL < -6)
-		velXL = -6;
+	if (velXR > 1)
+		velXR = 1;
+	if (velXL < -1)
+		velXL = -1;
 	posX += velXR * deltaTime;
 	posX += velXL * deltaTime;
 
-	if (velYU > 10)
-		velYU = 10;
+	if (velYU > 4.5)
+		velYU = 4.5;
 	posY += velYU * deltaTime;
 
 	//reducing velocity when moving right

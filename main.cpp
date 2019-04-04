@@ -74,7 +74,7 @@ void keyOperations() {
 	}
 	if (keyStates['w']) {
 		if (player.grounded) {
-			player.velYU += 3;
+			player.velYU += 1.5;
 			player.grounded = false;
 		}
 	}
@@ -83,11 +83,11 @@ void keyOperations() {
 	}
 
 	if (keyStates['a']) {
-		player.velXL -= 0.5;
+		player.velXL -= 0.1;
 	}
 
 	if (keyStates['d']) {
-		player.velXR += 0.5;
+		player.velXR += 0.1;
 	}
 }
 
