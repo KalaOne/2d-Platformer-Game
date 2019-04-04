@@ -3,6 +3,7 @@
 #include <iostream>
 #include <chrono>
 #include <string>
+#include "Level.h"
 
 
 class Entity {
@@ -12,17 +13,15 @@ public:
 	bool lPressed = false;
 	bool rPressed = false;
 	float newPosX, newPosY;
-	bool colliding = false;
+	bool collidingXLeft = false, collidingXRight = false, collidingYLeft = false, collidingYRight = false;
+	Level* level;
 
 	//Constructor for positioning the entity
-	Entity() {
-		posX = 0;
-		posY = 0;
-	}
 
-	Entity(float x, float y) {
+	Entity(float x, float y, Level& level) {
 		posX = x;
 		posY = y;
+		this->level = &level;
 	}
 
 	void updatePos(float deltaTime);

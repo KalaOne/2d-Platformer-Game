@@ -23,45 +23,11 @@ void keyfunction(unsigned char key, int x, int y);
 void update();				//called in winmain to update variables
 
 
-
-Entity player(0,0);
 Level level;
+Entity player(0,0, level);
 
-//Over here! This thing can't be in either level or entity class since it uses
-//both classes' variables. Ask for help perhaps?
-void Level::collision()
-{
-	int left_tile = player.posX / level.tileWidth;
-	int right_tile = player.posX + 50 / level.tileWidth;
-	//not sure if it starts topleft or bottom-leff
-	//presuming it starts top-left, hence adding "1 unit(50)" to bottom
-	int top_tile = player.posY / level.tileHeight;
-	int bottom_tile = player.posY + 50 / level.tileHeight;
 
-	if (left_tile < 0)
-		left_tile = 0;
-	if (right_tile > level.levelWidth)
-		right_tile = level.levelWidth;
-	if (top_tile > level.levelHeight)
-		top_tile = level.levelHeight;
-	if (bottom_tile < 0)
-		bottom_tile = 0;
-	colliding = false;
-	for (int x = left_tile; x<= right_tile; x++)
-	{
-//possibly add separate collision for X and Y
-		for (int y = top_tile; y <= bottom_tile; y++)
-		{
-			char tile = getTile(x, y);
-			if (tile == 'm') // THIS IS ALWAYS TRIGGERED!!!!!
-			{
-				colliding = true;
-				//cout << "Colliding." << endl;
-			}
-			
-		}
-	}
-}
+
 
 void gravity() {
 	if (player.posY > 0) {//if player is in the air, reduce velocity
@@ -81,10 +47,6 @@ void camera() {
 	//clamping camera
 	if (camX <= 0) camX = 0;
 	if (camY <= 0) camY = 0;
-
-	//2500 is level Width * tile size (50*50)
-	//1000 is level Height * tile size (20*50)
-//ASK IF THIS IS OKAY TO HARDCODE 1780 INSTEAD OF CALCULATING IT
 	if (camX >= level.getLevelWidth() * level.getTileWidth() - screenWidth) {
 		camX = level.getLevelWidth() * level.getTileWidth() - screenWidth;
 	}
@@ -144,7 +106,7 @@ void display()
 	glPointSize(10.0);
 	glColor3f(0, 1, 0);
 	player.drawEntity(deltaTime); //draw player polygon
-	level.collision();
+	player.collision();
 
 	glFlush();
 	glutSwapBuffers();
