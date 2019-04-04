@@ -4,35 +4,38 @@
 
 //Updating position of the entity
 void Entity::updatePos(float deltaTime) {
-	if (velX > 6)
-		velX = 6;
-	if (velX < -6)
-		velX = -6;
-	posX += velX * deltaTime;
+	collisionResponse();
+	if (velXR > 6)
+		velXR = 6;
+	if (velXL < -6)
+		velXL = -6;
+	posX += velXR * deltaTime;
+	posX += velXL * deltaTime;
 
-	if (velY > 10)
-		velY = 10;
-	posY += velY * deltaTime;
+	if (velYU > 10)
+		velYU = 10;
+	posY += velYU * deltaTime;
 
 	//reducing velocity when moving right
 	if (rPressed == false) {
-		velX += -0.025 * deltaTime;
-		if (velX <= 0)
-			velX = 0;
+		velXR += -0.025 * deltaTime;
+		if (velXR <= 0)
+			velXR = 0;
 		if (posX <= 0)
 			posX = 0;
 	}
 	//reducing velocity when moving left
 	if (lPressed == false) {
-		velX += 0.025 * deltaTime;
-		if (velX >= 0)
-			velX = 0;
+		velXL += 0.025 * deltaTime;
+		if (velXL >= 0)
+			velXL = 0;
 		if (posX <= 0)
 			posX = 0;
 	}
 	lPressed = false;
 	rPressed = false;
 
+	
 }
 
 
@@ -49,7 +52,7 @@ void Entity::drawEntity(float deltaTime) {
 	glEnd();
 }
 
-
+//Collision detection
 void Entity::collision()
 {
 	//+ 1 tile, not pixels(50)
@@ -86,12 +89,32 @@ void Entity::collision()
 	char tileRightY = level->getTile(right_tile, top_tile);
 	if (tileLeftY== '=')
 	{
-		std::cout << " Y left" << std::endl;
 		collidingYLeft = true;
 	}
 	if (tileRightY == '=')
 	{
-		std::cout << " Y right" << std::endl;
 		collidingYRight = true;
+	}
+}
+
+void Entity::collisionResponse()
+{
+	if (collidingXLeft) {
+		velXL = 0;
+		collidingXLeft = false;
+	}
+	else if (collidingXRight) {
+		velXR = 0;
+		collidingXRight = false;
+	}
+	if (collidingYLeft)
+	{
+		velYU = 0;
+		collidingYLeft = false;
+	}
+	else if (collidingYRight)
+	{
+		velYD = 0;
+		collidingYRight = false;
 	}
 }

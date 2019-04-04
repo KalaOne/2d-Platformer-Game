@@ -31,12 +31,12 @@ Entity player(0,0, level);
 
 void gravity() {
 	if (player.posY > 0) {//if player is in the air, reduce velocity
-		player.velY -= 0.025;
+		player.velYU -= 0.025;
 	}
 	if (player.posY <= 0) { //if player is on the ground, set ground to false
 		player.grounded = true;
 		player.posY = 0; //dont allow player to fall below ground
-		player.velY = 0;
+		player.velYU = 0;
 	}
 }
 
@@ -74,20 +74,20 @@ void keyOperations() {
 	}
 	if (keyStates['w']) {
 		if (player.grounded) {
-			player.velY += 3;
+			player.velYU += 3;
 			player.grounded = false;
 		}
 	}
 	if (keyStates['s']) {
-		player.velY -= 0.5;
+		player.velYD -= 0.1;
 	}
 
 	if (keyStates['a']) {
-		player.velX -= 0.5;
+		player.velXL -= 0.5;
 	}
 
 	if (keyStates['d']) {
-		player.velX += 0.5;
+		player.velXR += 0.5;
 	}
 }
 

@@ -31,5 +31,4 @@ public:
 	}
 	char getTile(int x, int y);
 	void drawLevel(int level);
-
 };

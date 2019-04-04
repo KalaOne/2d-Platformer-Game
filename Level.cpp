@@ -27,12 +27,13 @@ void Level::drawLevel(int level) {
 	levelTexture += "@------------------------------------------------@";
 	levelTexture += "@---------=--------------------------------------@";
 	levelTexture += "@--------=-=-------------------------------------@";
-	levelTexture += "@-----===---=-----------------------=------------@";
-	levelTexture += "@k---=-------=----------------------=------------@";
-	levelTexture += "@-k--=---------=---------------------=------====-@";
-	levelTexture += "@--k=----------==-------------------=------=--=--@";//y=20,x=51
-//try inversing the loop to get the right area. GEE GEE
-	for (int x = 0; x < levelWidth; x++) {
+	levelTexture += "@-------=---=------------=-----------------------@";
+	levelTexture += "@-----=------=-----------=---------------=-------@";
+	levelTexture += "@----=---------=---------=-===----=------=--==---@";
+	levelTexture += "@---=-----------=--------=---=--=---=----=----=--@";//y=20,x=51
+//This beibe reverses the whole string, not just X or Y. Now it starts bottom right->top left
+	std::reverse(levelTexture.begin(), levelTexture.end());
+	for (int x = levelWidth; x >= 0 ; x--) {
 		for (int y = 0; y < levelHeight; y++) {
 			char tileID = getTile(x, y);
 			switch (tileID)
