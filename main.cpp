@@ -106,7 +106,6 @@ void display()
 	glPointSize(10.0);
 	glColor3f(0, 1, 0);
 	player.drawEntity(deltaTime); //draw player polygon
-	player.collision();
 
 	glFlush();
 	glutSwapBuffers();

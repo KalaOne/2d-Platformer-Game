@@ -4,18 +4,22 @@
 
 //Updating position of the entity
 void Entity::updatePos(float deltaTime) {
-	collisionResponse();
+
 	if (velXR > 1)
 		velXR = 1;
 	if (velXL < -1)
 		velXL = -1;
+	int oldPosX = posX;
+	int oldPosY = posY;
+
 	posX += velXR * deltaTime;
 	posX += velXL * deltaTime;
 
 	if (velYU > 4.5)
 		velYU = 4.5;
 	posY += velYU * deltaTime;
-
+	collision();
+	collisionResponse(oldPosX, oldPosY);
 	//reducing velocity when moving right
 	if (rPressed == false) {
 		velXR += -0.025 * deltaTime;
@@ -35,7 +39,6 @@ void Entity::updatePos(float deltaTime) {
 	lPressed = false;
 	rPressed = false;
 
-	
 }
 
 
@@ -97,24 +100,29 @@ void Entity::collision()
 	}
 }
 
-void Entity::collisionResponse()
+void Entity::collisionResponse(int oldPosX, int oldPosY)
 {
+
 	if (collidingXLeft) {
 		velXL = 0;
 		collidingXLeft = false;
+		posX = oldPosX;
 	}
 	else if (collidingXRight) {
 		velXR = 0;
 		collidingXRight = false;
+		posX = oldPosX;
 	}
 	if (collidingYLeft)
 	{
 		velYU = 0;
 		collidingYLeft = false;
+		posY = oldPosY;
 	}
 	else if (collidingYRight)
 	{
 		velYD = 0;
 		collidingYRight = false;
+		posY = oldPosY;
 	}
 }
