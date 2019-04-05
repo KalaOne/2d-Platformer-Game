@@ -24,26 +24,26 @@ void update();				//called in winmain to update variables
 
 
 Level level;
-Entity player(0,0, level);
+Entity player(50,0, level);
 
 
 
 
 void gravity() {
-	if (player.posY > 0) {//if player is in the air, reduce velocity
+	if (player.newPosY > 0) {//if player is in the air, reduce velocity
 		player.velYU -= 0.025;
 	}
-	if (player.posY <= 0) { //if player is on the ground, set ground to false
+	if (player.newPosY <= 0) { //if player is on the ground, set ground to false
 		player.grounded = true;
-		player.posY = 0; //dont allow player to fall below ground
+		player.newPosY = 0; //dont allow player to fall below ground
 		player.velYU = 0;
 	}
 }
 
 void camera() {
 	//call camera on the centre of playerPos
-	camX = player.posX - (screenWidth / 2);
-	camY = player.posY - (screenHeight / 2);
+	camX = player.newPosX - (screenWidth / 2);
+	camY = player.newPosY - (screenHeight / 2);
 	//clamping camera
 	if (camX <= 0) camX = 0;
 	if (camY <= 0) camY = 0;
@@ -74,20 +74,20 @@ void keyOperations() {
 	}
 	if (keyStates['w']) {
 		if (player.grounded) {
-			player.velYU += 1.5;
+			player.velYU += 1;
 			player.grounded = false;
 		}
 	}
 	if (keyStates['s']) {
-		player.velYD -= 0.1;
+		player.velYD -= 1;
 	}
 
 	if (keyStates['a']) {
-		player.velXL -= 0.1;
+		player.velXL -= 0.2;
 	}
 
 	if (keyStates['d']) {
-		player.velXR += 0.1;
+		player.velXR += 0.2;
 	}
 }
 

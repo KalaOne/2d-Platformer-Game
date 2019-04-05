@@ -9,15 +9,15 @@ void Entity::updatePos(float deltaTime) {
 		velXR = 1;
 	if (velXL < -1)
 		velXL = -1;
-	int oldPosX = posX;
-	int oldPosY = posY;
+	int oldPosX = newPosX;
+	int oldPosY = newPosY;
+	newPosX += velXR * deltaTime;
+	newPosX += velXL * deltaTime;
 
-	posX += velXR * deltaTime;
-	posX += velXL * deltaTime;
-
-	if (velYU > 4.5)
-		velYU = 4.5;
-	posY += velYU * deltaTime;
+	if (velYU > 3)
+		velYU = 3;
+	newPosY += velYU * deltaTime;
+	//std::cout << deltaTime << std::endl;
 	collision();
 	collisionResponse(oldPosX, oldPosY);
 	//reducing velocity when moving right
@@ -38,7 +38,12 @@ void Entity::updatePos(float deltaTime) {
 	}
 	lPressed = false;
 	rPressed = false;
-
+	collidingXLeft = false;
+	collidingXRight = false;
+	collidingAboveLeft = false;
+	collidingAboveRight = false;
+	collidingBelowLeft = false;
+	collidingBelowRight = false;
 }
 
 
@@ -48,10 +53,10 @@ void Entity::drawEntity(float deltaTime) {
 	updatePos(deltaTime);
 //add texture to the polygon here.
 	glBegin(GL_POLYGON);
-	glVertex2d(posX, posY);	 //bottom left
-	glVertex2d(posX + 50, posY); //bottom right
-	glVertex2d(posX + 50, posY + 50); //top right
-	glVertex2d(posX, posY + 50);//top left
+	glVertex2d(newPosX, newPosY);	 //bottom left
+	glVertex2d(newPosX + 50, newPosY); //bottom right
+	glVertex2d(newPosX + 50, newPosY + 50); //top right
+	glVertex2d(newPosX, newPosY + 50);//top left
 	glEnd();
 }
 
@@ -59,11 +64,12 @@ void Entity::drawEntity(float deltaTime) {
 void Entity::collision()
 {
 	//+ 1 tile, not pixels(50)
-	int left_tile	= posX / level->getTileWidth();
-	int right_tile	= posX / level->getTileWidth() + 1;
-	int top_tile	= posY / level->getTileHeight() + 1;
-	int bottom_tile = posY / level->getTileHeight();
-
+	int left_tile	= newPosX / level->getTileWidth();
+	int right_tile	= newPosX / level->getTileWidth() + 1;
+	int top_tile	= newPosY / level->getTileHeight() + 1;
+	int bottom_tile = newPosY / level->getTileHeight();
+	/*std::cout << "Right " << right_tile << std::endl;
+	std::cout << "Top " << top_tile << std::endl;*/
 	if (left_tile < 0)
 		left_tile = 0;
 	if (right_tile > level->getTileWidth())
@@ -74,8 +80,11 @@ void Entity::collision()
 		bottom_tile = 0;
 	collidingXLeft = false;
 	collidingXRight = false;
-	collidingYLeft = false;
-	collidingYRight = false;
+	collidingAboveLeft = false;
+	collidingAboveRight = false;
+	collidingBelowLeft = false;
+	collidingBelowRight = false;
+	//collision left/right
 	char tileLeftX = level->getTile(left_tile, bottom_tile);
 	char tileRightX = level->getTile(right_tile, bottom_tile);
 	if(tileLeftX== '=')
@@ -88,15 +97,26 @@ void Entity::collision()
 		//std::cout << " Right" << std::endl;
 		collidingXRight = true;
 	}
-	char tileLeftY = level->getTile(left_tile, top_tile);
-	char tileRightY = level->getTile(right_tile, top_tile);
-	if (tileLeftY== '=')
+	//collision above and below
+	char tileAboveLeft = level->getTile(left_tile, top_tile);
+	char tileAboveRight = level->getTile(right_tile, top_tile);
+	char tileBelowLeft = level->getTile((left_tile), bottom_tile - 1);
+	char tileBelowRight = level->getTile(right_tile, bottom_tile - 1);
+	if (tileAboveLeft == '=')
 	{
-		collidingYLeft = true;
+		collidingAboveLeft = true;
 	}
-	if (tileRightY == '=')
+	if (tileAboveRight == '=')
 	{
-		collidingYRight = true;
+		collidingAboveRight = true;
+	}
+	if(tileBelowLeft == '=')
+	{
+		collidingBelowLeft = true;
+	}
+	if (tileBelowRight == '=')
+	{
+		collidingBelowRight = true;
 	}
 }
 
@@ -104,25 +124,37 @@ void Entity::collisionResponse(int oldPosX, int oldPosY)
 {
 
 	if (collidingXLeft) {
+		newPosX = posX;
 		velXL = 0;
-		collidingXLeft = false;
-		posX = oldPosX;
+
 	}
 	else if (collidingXRight) {
+		newPosX = posX;
 		velXR = 0;
-		collidingXRight = false;
-		posX = oldPosX;
+		
 	}
-	if (collidingYLeft)
+	if (collidingAboveLeft)
 	{
+		newPosY = posY;
 		velYU = 0;
-		collidingYLeft = false;
-		posY = oldPosY;
+		
 	}
-	else if (collidingYRight)
+	else if (collidingAboveRight)
 	{
+		newPosY = posY;
 		velYD = 0;
-		collidingYRight = false;
-		posY = oldPosY;
+	
+	}
+	if (collidingBelowLeft)
+	{
+		newPosY = posY;
+		velYU = 0;
+		
+	}
+	else if (collidingBelowRight)
+	{
+		newPosY = posY;
+		velYD = 0;
+		
 	}
 }

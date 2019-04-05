@@ -13,14 +13,14 @@ public:
 	bool lPressed = false;
 	bool rPressed = false;
 	float newPosX, newPosY;
-	bool collidingXLeft = false, collidingXRight = false, collidingYLeft = false, collidingYRight = false;
+	bool collidingXLeft = false, collidingXRight = false, collidingAboveLeft = false, collidingAboveRight = false, collidingBelowLeft = false, collidingBelowRight = false;;
 	Level* level;
 
 	//Constructor for positioning the entity
 
 	Entity(float x, float y, Level& level) {
-		posX = x;
-		posY = y;
+		newPosX = x;
+		newPosY = y;
 		this->level = &level;
 	}
 
