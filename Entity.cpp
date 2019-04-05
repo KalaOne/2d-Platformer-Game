@@ -3,19 +3,32 @@
 
 
 //Updating position of the entity
-void Entity::updatePos(float deltaTime) {
-
-	if (velXR > 1)
-		velXR = 1;
-	if (velXL < -1)
-		velXL = -1;
+void Entity::updatePos(float deltaTime) 
+{
 	int oldPosX = newPosX;
 	int oldPosY = newPosY;
+	//float steps = 5;
+	//float step_speedXR = velXR / steps;
+	//float step_speedXL = velXL / steps;
+	//float step_speedY = velYU / steps;
+	if (velXR > 0.6) //incrementing by 0.2
+		velXR = 0.6;
+	if (velXL < -0.6) //incrementing by 0.2
+		velXL = -0.6;
+	if (velYU > 5) //incrementing by 1
+		velYU = 5;
+
+	//for(float i = 0; i < steps; i ++)
+	//{
+		//newPosX += step_speedXR * deltaTime;
+		//newPosX += step_speedXL * deltaTime;
+	//}
+	//for(float i = 0; i < steps; i++)
+	//{
+		//newPosY += step_speedY * deltaTime;
+	//}
 	newPosX += velXR * deltaTime;
 	newPosX += velXL * deltaTime;
-
-	if (velYU > 4)
-		velYU = 4;
 	newPosY += velYU * deltaTime;
 	//std::cout << deltaTime << std::endl;
 	collision();
@@ -47,7 +60,8 @@ void Entity::updatePos(float deltaTime) {
 }
 
 //Draws entity
-void Entity::drawEntity(float deltaTime) {
+void Entity::drawEntity(float deltaTime) 
+{
 	updatePos(deltaTime);
 //add texture to the polygon here.
 	glBegin(GL_POLYGON);
@@ -59,7 +73,8 @@ void Entity::drawEntity(float deltaTime) {
 }
 
 
-void Entity::gravity() {
+void Entity::gravity() 
+{
 	if (newPosY > 0) {//if player is in the air, reduce velocity
 		velYU -= 0.025;
 	}
@@ -134,18 +149,12 @@ void Entity::collisionResponse(int oldPosX, int oldPosY)
 {
 	//colliding X
 	if (collidingXLeft) {
-		if (newPosY >= 0) {
-			gravity();
-			velXL = 0;
-			newPosX = oldPosX;
-		}
+		velXL = 0;
+		newPosX = oldPosX;
 	}
 	else if (collidingXRight) {
-		if (newPosY >= 0) {
-			gravity();
-			velXR = 0;
-			newPosX = oldPosX;
-		}
+		velXR = 0;
+		newPosX = oldPosX;
 	}
 	//colliding Y
 	if (collidingAboveLeft)

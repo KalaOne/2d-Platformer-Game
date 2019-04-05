@@ -3,6 +3,7 @@
 
 #include "Entity.h"
 #include "Level.h"
+#include "Platform.h"
 
 
 using namespace std;
@@ -24,7 +25,8 @@ void update();				//called in winmain to update variables
 
 
 Level level;
-Entity player(50,0, level);
+Entity player(50,0, level); // keep in mind each field/tile size is 50. x=1;
+Platform platform(150, 20);
 
 
 
@@ -95,8 +97,10 @@ void display()
 	level.drawLevel(1);
 	glPointSize(10.0);
 	glColor3f(0, 1, 0);
-	player.drawEntity(deltaTime); //draw player polygon
-
+	player.drawEntity(deltaTime);
+	platform.drawPlatform(50, 100);
+	cout <<"x "<< platform.getX() << endl;
+	cout <<"y "<< platform.getY() << endl;
 	glFlush();
 	glutSwapBuffers();
 	player.gravity();
