@@ -10,13 +10,17 @@ class Platform
 {
 private:
 	int width, height;
-	int platformX, platformY;
+	bool moveX = false, moveY = false;
+	float newPosX = 0.0, newPosY = 0.0;
+	float platformVelX = 0.01, platformVelY = 0.01;
 public:
 
-	Platform(int w, int h)
+	Platform(int w, int h, float xPos, float yPos)
 	{
 		width = w;
 		height = h;
+		newPosX = xPos;
+		newPosY = yPos;
 	}
 
 	int getWidth()
@@ -29,27 +33,16 @@ public:
 		return height;
 	}
 
-	int getX()
+	float getX()
 	{
-		return platformX;
+		return newPosX;
 	}
 
-	int getY()
+	float getY()
 	{
-		return platformY;
+		return newPosY;
 	}
 
-	void drawPlatform(int x, int y)
-	{
-		platformX = x;
-		platformY = y;
-		glColor3f(1, 1, 0);
-	//add texture to the polygon here.
-		glBegin(GL_POLYGON);
-		glVertex2d(x, y);	 //bottom left
-		glVertex2d(x + width, y); //bottom right
-		glVertex2d(x + width, y + height); //top right
-		glVertex2d(x, y + height);//top left
-		glEnd();
-	}
+	void updatePos(int travelDistance, bool x, float deltaTime);
+	void drawPlatform(float deltaTime);
 };

@@ -65,10 +65,10 @@ void Entity::drawEntity(float deltaTime)
 	updatePos(deltaTime);
 //add texture to the polygon here.
 	glBegin(GL_POLYGON);
-	glVertex2d(newPosX, newPosY);	 //bottom left
-	glVertex2d(newPosX + 50, newPosY); //bottom right
-	glVertex2d(newPosX + 50, newPosY + 50); //top right
-	glVertex2d(newPosX, newPosY + 50);//top left
+		glVertex2d(newPosX, newPosY);	 //bottom left
+		glVertex2d(newPosX + 50, newPosY); //bottom right
+		glVertex2d(newPosX + 50, newPosY + 50); //top right
+		glVertex2d(newPosX, newPosY + 50);//top left
 	glEnd();
 }
 

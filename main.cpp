@@ -26,7 +26,7 @@ void update();				//called in winmain to update variables
 
 Level level;
 Entity player(50,0, level); // keep in mind each field/tile size is 50. x=1;
-Platform platform(150, 20);
+Platform platform(150, 20, 50, 100);
 
 
 
@@ -98,9 +98,9 @@ void display()
 	glPointSize(10.0);
 	glColor3f(0, 1, 0);
 	player.drawEntity(deltaTime);
-	platform.drawPlatform(50, 100);
-	cout <<"x "<< platform.getX() << endl;
-	cout <<"y "<< platform.getY() << endl;
+	platform.drawPlatform(deltaTime);
+
+
 	glFlush();
 	glutSwapBuffers();
 	player.gravity();
