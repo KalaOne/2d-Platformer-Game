@@ -26,6 +26,7 @@ public:
 
 	void updatePos(float deltaTime);
 	void drawEntity(float deltaTime);
+	void gravity();
 	void collision();
 	void collisionResponse(int oldPosX, int oldPosY);
 };

@@ -29,16 +29,6 @@ Entity player(50,0, level);
 
 
 
-void gravity() {
-	if (player.newPosY > 0) {//if player is in the air, reduce velocity
-		player.velYU -= 0.025;
-	}
-	if (player.newPosY <= 0) { //if player is on the ground, set ground to false
-		player.grounded = true;
-		player.newPosY = 0; //dont allow player to fall below ground
-		player.velYU = 0;
-	}
-}
 
 void camera() {
 	//call camera on the centre of playerPos
@@ -109,7 +99,7 @@ void display()
 
 	glFlush();
 	glutSwapBuffers();
-	gravity();
+	player.gravity();
 }
 
 void reshape(int width, int height)		// Resize the OpenGL window
