@@ -2,46 +2,23 @@
 
 void Platform::updatePosX(int travelDistance, bool right, float deltaTime)
 {
-	////Never stops moving to left... Somehow doesn't apply positive velocity....
-	//int currentDistance = 0;
-	//bool moveRight = true;
-	//while (currentDistance <= travelDistance)
-	//{
-	//	newPosX += platformVelX * deltaTime;
-	//	currentDistance++;
-	//}
-
-	//while(currentDistance >= 0)
-	//{
-	//	newPosX += -platformVelX * deltaTime;
-	//	currentDistance--;
-	//}
-
-//Other option
-	if (right)
+	//If deltaTime used for platform movement it buggs out..
+	if(moveX)
 	{
-		moveX = true;
-	}
-	int moveDistance = 0;
-	if (moveX)
-	{
-		while (moveDistance <= travelDistance)
-		{
-			newPosX += platformVelX * deltaTime * 0.25;
-			moveDistance++;
+		if (currentDistance <= travelDistance) {
+			newPosX += platformVelX * 15;
+			currentDistance++;
 		}
-		if (moveDistance >= travelDistance)
-		{
-			while (moveDistance >= 0)
-			{
-				newPosX += -platformVelX * deltaTime * 0.25;
-				moveDistance--;
-			}
-		}
+		else
+			moveX = false;
 	}
-	else if (moveY)
-	{
-
+	else {
+		if (currentDistance >= 0) {
+			newPosX += -platformVelX * 15;
+			currentDistance--;
+		}
+		else
+			moveX = true;
 	}
 }
 
@@ -50,9 +27,9 @@ void Platform::updatePosY(int travelDistance, bool up, float deltaTime)
 	
 }
 
-void Platform::drawPlatform(bool x, bool y, float deltaTime)
+void Platform::drawPlatform(int travelDistance, bool x, bool y, float deltaTime)
 {
-	updatePosX(50, x, deltaTime);
+	updatePosX(1000, x, deltaTime);
 	updatePosY(5, y, deltaTime);
 	
 	glColor3f(1, 1, 0);
