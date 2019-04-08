@@ -7,30 +7,17 @@ void Entity::updatePos(float deltaTime)
 {
 	int oldPosX = newPosX;
 	int oldPosY = newPosY;
-	//float steps = 5;
-	//float step_speedXR = velXR / steps;
-	//float step_speedXL = velXL / steps;
-	//float step_speedY = velYU / steps;
+
 	if (velXR > 0.6) //incrementing by 0.2
 		velXR = 0.6;
 	if (velXL < -0.6) //incrementing by 0.2
 		velXL = -0.6;
-	if (velYU > 5) //incrementing by 1
-		velYU = 5;
+	if (velYU > 12) //incrementing by 3
+		velYU = 10;
 
-	//for(float i = 0; i < steps; i ++)
-	//{
-		//newPosX += step_speedXR * deltaTime;
-		//newPosX += step_speedXL * deltaTime;
-	//}
-	//for(float i = 0; i < steps; i++)
-	//{
-		//newPosY += step_speedY * deltaTime;
-	//}
 	newPosX += velXR * deltaTime;
 	newPosX += velXL * deltaTime;
-	newPosY += velYU * deltaTime;
-	//std::cout << deltaTime << std::endl;
+	newPosY += velYU * deltaTime * 0.5;
 	collision();
 	collisionResponse(oldPosX, oldPosY);
 	//reducing velocity when moving right
@@ -73,12 +60,12 @@ void Entity::drawEntity(float deltaTime)
 }
 
 
-void Entity::gravity() 
+void Entity::gravity(float deltaTime) 
 {
-	if (newPosY > 0) {//if player is in the air, reduce velocity
-		velYU -= 0.025;
+	if (!grounded) {//if player is in the air, reduce velocity
+		velYU -= 0.025 * deltaTime;
 	}
-	if (newPosY <= 0) { //if player is on the ground, set ground to false
+	if (newPosY <= 1) { //if player is on the ground, set grounded to true
 		grounded = true;
 		newPosY = 0; //dont allow player to fall below ground
 		velYU = 0;
@@ -172,9 +159,11 @@ void Entity::collisionResponse(int oldPosX, int oldPosY)
 	if (collidingBelowLeft)
 	{
 		newPosY = oldPosY;
+		grounded = true;
 	}
 	else if (collidingBelowRight)
 	{
 		newPosY = oldPosY;
+		grounded = true; 
 	}
 }

@@ -1,39 +1,33 @@
 #include "Platform.h"
 
-void Platform::updatePos(int travelDistance,bool x, float deltaTime)
+void Platform::updatePosX(int travelDistance, bool right, float deltaTime)
 {
-	if (x)
+	//Never stops moving to left... Somehow doesn't apply positive velocity....
+	int currentDistance = 0;
+	bool moveRight = true;
+	while (currentDistance <= travelDistance)
 	{
-		moveX = true;
+		newPosX += platformVelX * deltaTime;
+		currentDistance++;
 	}
-	else
-		moveY = true;
-	int moveDistance = 0;
-	if(moveX)
+
+	while(currentDistance >= 0)
 	{
-		while(moveDistance <= travelDistance)
-		{
-			newPosX += platformVelX * deltaTime;
-			moveDistance++;
-		}
-		if( moveDistance == travelDistance)
-		{
-			while(moveDistance >= 0)
-			{
-				newPosX += -platformVelX * deltaTime;
-				moveDistance--;
-			}
-		}
+		newPosX += -platformVelX * deltaTime;
+		currentDistance--;
 	}
-	else if(moveY)
-	{
-		
-	}
+
 }
 
-void Platform::drawPlatform(float deltaTime)
+void Platform::updatePosY(int travelDistance, bool up, float deltaTime)
 {
-	updatePos(5, 1, deltaTime);
+	
+}
+
+void Platform::drawPlatform(bool x, bool y, float deltaTime)
+{
+	updatePosX(50, x, deltaTime);
+	updatePosY(5, y, deltaTime);
 	glColor3f(1, 1, 0);
 	//add texture to the polygon here.
 	glBegin(GL_POLYGON);

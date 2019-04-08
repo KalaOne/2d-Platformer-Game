@@ -43,6 +43,7 @@ public:
 		return newPosY;
 	}
 
-	void updatePos(int travelDistance, bool x, float deltaTime);
-	void drawPlatform(float deltaTime);
+	void updatePosX(int travelDistance, bool right, float deltaTime);
+	void updatePosY(int travelDistance, bool up, float deltaTime);
+	void drawPlatform(bool x, bool y, float deltaTime);
 };

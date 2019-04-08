@@ -12,8 +12,8 @@ int screenWidth=720, screenHeight=480;
 bool* keyStates = new bool[256];
 float grav = 0;
 float camX = 0, camY = 0;
-int oldStartTime = 0;
-int deltaTime;
+float oldStartTime = 0.0;
+float deltaTime;
 
 
 //OPENGL FUNCTION PROTOTYPES
@@ -66,7 +66,7 @@ void keyOperations() {
 	}
 	if (keyStates['w']) {
 		if (player.grounded) {
-			player.velYU += 1;
+			player.velYU += 3;
 			player.grounded = false;
 		}
 	}
@@ -88,9 +88,10 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 	//delta time
-	int startTime = glutGet(GLUT_ELAPSED_TIME);
-	deltaTime = startTime - oldStartTime;
+	float startTime = glutGet(GLUT_ELAPSED_TIME);
+	deltaTime = (startTime - oldStartTime) * 0.75;
 	oldStartTime = startTime;
+	//cout << deltaTime << endl;
 
 	camera();
 	keyOperations();
@@ -98,12 +99,12 @@ void display()
 	glPointSize(10.0);
 	glColor3f(0, 1, 0);
 	player.drawEntity(deltaTime);
-	platform.drawPlatform(deltaTime);
+	platform.drawPlatform(1,0,deltaTime);
 
 
 	glFlush();
 	glutSwapBuffers();
-	player.gravity();
+	player.gravity(deltaTime);
 }
 
 void reshape(int width, int height)		// Resize the OpenGL window
