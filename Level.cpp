@@ -1,6 +1,6 @@
 #include "Level.h"
 
-inline char Level::getTile(int x, int y) {
+char Level::getTile(int x, int y) {
 	if (x >= 0 && x <= levelWidth && y >= 0 && y <= levelHeight) {
 		//if the position is in bounds of the level
 		//return corresponding tile
@@ -11,7 +11,7 @@ inline char Level::getTile(int x, int y) {
 }
 
 void Level::drawLevel(int level) {
-	levelTexture = "@-----------------=------=-===--=====------------@";
+	levelTexture = "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@";
 	levelTexture += "@---=-------------=---------------=----------==--@";
 	levelTexture += "@---=-------------=----========---=-----------=--@";
 	levelTexture += "@---====----------=---------------=-----------=--@";
@@ -26,9 +26,9 @@ void Level::drawLevel(int level) {
 	levelTexture += "@------------------------------------------------@";
 	levelTexture += "@------------------------------------------------@";
 	levelTexture += "@---------=--------------------------------------@";
-	levelTexture += "@--------=-=-------------------------------------@";
-	levelTexture += "@-------=---=------------=-----------------------@";
-	levelTexture += "@-----=------=-----------=---------------==--==--@";
+	levelTexture += "@--------=-=----------------=--------------------@";
+	levelTexture += "@-------=---=------------=----==-----------------@";
+	levelTexture += "@-----=------=-----------=------==-------==--==--@";
 	levelTexture += "@----=---------=---------=-===----=-----=--------@";
 	levelTexture += "@---=-----------=--------=---=--=---=------------@";//y=20,x=51
 //This beibe reverses the whole string, not just X or Y. Now it starts bottom right->top left

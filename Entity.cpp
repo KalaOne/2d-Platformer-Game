@@ -1,5 +1,5 @@
 #include "Entity.h"
-#include "Level.h"
+
 
 
 //Updating position of the entity
@@ -12,8 +12,8 @@ void Entity::updatePos(float deltaTime)
 		velXR = 0.6;
 	if (velXL < -0.6) //incrementing by 0.2
 		velXL = -0.6;
-	if (velYU > 12) //incrementing by 3
-		velYU = 10;
+	if (velYU > 6) //incrementing by 2
+		velYU = 6;
 
 	newPosX += velXR * deltaTime;
 	newPosX += velXL * deltaTime;
@@ -47,7 +47,7 @@ void Entity::updatePos(float deltaTime)
 }
 
 //Draws entity
-void Entity::drawEntity(float deltaTime) 
+void Entity::drawEntity(Level level, float deltaTime) 
 {
 	updatePos(deltaTime);
 //add texture to the polygon here.
@@ -63,7 +63,7 @@ void Entity::drawEntity(float deltaTime)
 void Entity::gravity(float deltaTime) 
 {
 	if (!grounded) {//if player is in the air, reduce velocity
-		velYU -= 0.025 * deltaTime;
+		velYU -= 0.025 * deltaTime * 0.5;
 	}
 	if (newPosY <= 1) { //if player is on the ground, set grounded to true
 		grounded = true;

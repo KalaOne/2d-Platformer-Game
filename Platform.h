@@ -4,6 +4,7 @@
 #include <iostream>
 #include <chrono>
 #include <string>
+#include "Entity.h"
 
 
 class Platform
@@ -46,4 +47,5 @@ public:
 	void updatePosX(int travelDistance, bool right, float deltaTime);
 	void updatePosY(int travelDistance, bool up, float deltaTime);
 	void drawPlatform(bool x, bool y, float deltaTime);
+	void collisionAABB(Entity ent);
 };

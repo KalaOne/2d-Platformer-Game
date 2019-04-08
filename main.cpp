@@ -1,8 +1,6 @@
 //includes areas for keyboard control, mouse control, resizing the window
 //and draws a spinning rectangle
 
-#include "Entity.h"
-#include "Level.h"
 #include "Platform.h"
 
 
@@ -66,7 +64,7 @@ void keyOperations() {
 	}
 	if (keyStates['w']) {
 		if (player.grounded) {
-			player.velYU += 3;
+			player.velYU += 2;
 			player.grounded = false;
 		}
 	}
@@ -98,8 +96,10 @@ void display()
 	level.drawLevel(1);
 	glPointSize(10.0);
 	glColor3f(0, 1, 0);
-	player.drawEntity(deltaTime);
+	player.drawEntity(level,deltaTime);
 	platform.drawPlatform(1,0,deltaTime);
+	//checking aabb with player.
+	platform.collisionAABB(player);
 
 
 	glFlush();
