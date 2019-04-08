@@ -10,7 +10,7 @@ int screenWidth=720, screenHeight=480;
 bool* keyStates = new bool[256];
 float grav = 0;
 float camX = 0, camY = 0;
-float oldStartTime = 0.0;
+float oldTime = 0.0;
 float deltaTime;
 
 
@@ -86,9 +86,9 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 	//delta time
-	float startTime = glutGet(GLUT_ELAPSED_TIME);
-	deltaTime = (startTime - oldStartTime) * 0.75;
-	oldStartTime = startTime;
+	float newTime = glutGet(GLUT_ELAPSED_TIME);
+	deltaTime = (newTime - oldTime) * 0.75;
+	oldTime = newTime;
 	//cout << deltaTime << endl;
 
 	camera();
@@ -97,7 +97,7 @@ void display()
 	glPointSize(10.0);
 	glColor3f(0, 1, 0);
 	player.drawEntity(level,deltaTime);
-	platform.drawPlatform(1,0,deltaTime);
+	platform.drawPlatform(20, 1,0,deltaTime);
 	//checking aabb with player.
 	platform.collisionAABB(player);
 

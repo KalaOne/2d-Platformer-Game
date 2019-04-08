@@ -29,8 +29,8 @@ void Level::drawLevel(int level) {
 	levelTexture += "@--------=-=----------------=--------------------@";
 	levelTexture += "@-------=---=------------=----==-----------------@";
 	levelTexture += "@-----=------=-----------=------==-------==--==--@";
-	levelTexture += "@----=---------=---------=-===----=-----=--------@";
-	levelTexture += "@---=-----------=--------=---=--=---=------------@";//y=20,x=51
+	levelTexture += "@----=--------=----------=-===----=-----=--------@";
+	levelTexture += "@---=----------=---------=---=--=---=------------@";//y=20,x=51
 //This beibe reverses the whole string, not just X or Y. Now it starts bottom right->top left
 	std::reverse(levelTexture.begin(), levelTexture.end());
 	for (int x = levelWidth; x >= 0 ; x--) {
