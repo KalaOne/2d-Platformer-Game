@@ -2,7 +2,7 @@
 
 void Platform::updatePosX(int travelDistance, bool right, float deltaTime)
 {
-	//If deltaTime used for platform movement it buggs out..
+	//If deltaTime used for platform movement, it buggs out..
 	if(moveX)
 	{
 		if (currentDistance <= travelDistance) {
@@ -49,6 +49,7 @@ void Platform::collisionAABB(Entity ent)
 		ent.newPosY < (getY() + getHeight()) &&
 		ent.newPosY + 50 > getY())
 	{
+		//Keep this whole bit, and break down again from top/bottom/sides.
 		std::cout << "Colliding with the platform" << std::endl;
 	}
 }

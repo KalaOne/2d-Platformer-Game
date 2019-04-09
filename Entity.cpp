@@ -49,6 +49,8 @@ void Entity::updatePos(float deltaTime)
 //Draws entity
 void Entity::drawEntity(Level level, float deltaTime) 
 {
+	glPushMatrix();
+	glColor3f(0, 1, 0);
 	updatePos(deltaTime);
 //add texture to the polygon here.
 	glBegin(GL_POLYGON);
@@ -57,6 +59,8 @@ void Entity::drawEntity(Level level, float deltaTime)
 		glVertex2d(newPosX + 50, newPosY + 50); //top right
 		glVertex2d(newPosX, newPosY + 50);//top left
 	glEnd();
+	glPopMatrix();
+
 }
 
 
@@ -65,7 +69,7 @@ void Entity::gravity(float deltaTime)
 	if (!grounded) {//if player is in the air, reduce velocity
 		velYU -= 0.025 * deltaTime * 0.5;
 	}
-	if (newPosY <= 1) { //if player is on the ground, set grounded to true
+	if (newPosY <= 0) { //if player is on the ground, set grounded to true
 		grounded = true;
 		newPosY = 0; //dont allow player to fall below ground
 		velYU = 0;
@@ -90,6 +94,40 @@ void Entity::collision()
 		top_tile = level->getTileHeight();
 	if (bottom_tile < 0)
 		bottom_tile = 0;
+	if (debug) {
+		//bottom left tile
+		glColor3f(1, 1, 1);
+		glBegin(GL_LINE_LOOP);
+		glVertex2d(left_tile * level->getTileWidth(), bottom_tile);//bot left
+		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth(), bottom_tile);//bot right
+		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth(), bottom_tile * level->getTileHeight() + level->getTileHeight());//top right
+		glVertex2d(left_tile * level->getTileWidth(), bottom_tile * level->getTileHeight() + level->getTileHeight());//top left
+		glEnd();
+
+		glBegin(GL_LINE_LOOP);
+		//bottom right tile
+		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth(), bottom_tile);//bot left
+		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth() + level->getTileWidth(), bottom_tile);//bot right
+		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth() + level->getTileWidth(), bottom_tile * level->getTileHeight() + level->getTileHeight());//top right
+		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth(), bottom_tile * level->getTileHeight() + level->getTileHeight());//top left
+		glEnd();
+
+		glBegin(GL_LINE_LOOP);
+		//top left tile
+		glVertex2d(left_tile * level->getTileWidth(), top_tile);//bot left
+		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth(), top_tile);//bot right
+		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth(), top_tile * level->getTileHeight() + level->getTileHeight());//top right
+		glVertex2d(left_tile * level->getTileWidth(), top_tile * level->getTileHeight() + level->getTileHeight());//top left
+		glEnd();
+
+		glBegin(GL_LINE_LOOP);
+		//top right tile
+		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth(), top_tile);//bot left
+		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth() + level->getTileWidth(), top_tile);//bot right
+		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth() + level->getTileWidth(), top_tile * level->getTileHeight() + level->getTileHeight());//top right
+		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth(), top_tile * level->getTileHeight() + level->getTileHeight());//top left
+		glEnd();
+	}
 	collidingXLeft = false;
 	collidingXRight = false;
 	collidingAboveLeft = false;
@@ -139,7 +177,7 @@ void Entity::collisionResponse(int oldPosX, int oldPosY)
 		velXL = 0;
 		newPosX = oldPosX;
 	}
-	else if (collidingXRight) {
+	if (collidingXRight) {
 		velXR = 0;
 		newPosX = oldPosX;
 	}
@@ -150,7 +188,7 @@ void Entity::collisionResponse(int oldPosX, int oldPosY)
 		velYU = 0;
 		
 	}
-	else if (collidingAboveRight)
+	if (collidingAboveRight)
 	{
 		newPosY = oldPosY;
 		velYD = 0;
@@ -161,7 +199,7 @@ void Entity::collisionResponse(int oldPosX, int oldPosY)
 		newPosY = oldPosY;
 		grounded = true;
 	}
-	else if (collidingBelowRight)
+	if (collidingBelowRight)
 	{
 		newPosY = oldPosY;
 		grounded = true; 
