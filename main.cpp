@@ -24,8 +24,9 @@ void update();				//called in winmain to update variables
 
 Level level;
 Entity player(50,0, level); // keep in mind each field/tile size is 50. x=1;
-Platform platform(150, 20, 50, 100);
-
+Entity enemy1(300, 0, level);
+Platform platform(150, 20, 500, 50);
+Platform plat2(100, 30, 250, 25);
 
 
 
@@ -64,20 +65,20 @@ void keyOperations() {
 	}
 	if (keyStates['w']) {
 		if (player.grounded) {
-			player.velYU += 2;
+			player.velY += 2;
 			player.grounded = false;
 		}
 	}
 	if (keyStates['s']) {
-		player.velYD -= 1;
+		player.velY -= 0.5;
 	}
 
 	if (keyStates['a']) {
-		player.velXL -= 0.2;
+		player.velX -= 0.5;
 	}
 
 	if (keyStates['d']) {
-		player.velXR += 0.2;
+		player.velX += 0.5;
 	}
 }
 
@@ -96,10 +97,14 @@ void display()
 	level.drawLevel(1);
 	glPointSize(10.0);
 	glColor3f(0, 1, 0);
-	player.drawEntity(level,deltaTime);
-	platform.drawPlatform(20, 1,0,deltaTime);
+	player.drawEntity(level,0,deltaTime);
+	enemy1.drawEntity(level, 1,deltaTime);
+	platform.drawPlatform(1500, 1,0,deltaTime);
+	plat2.drawPlatform(2000, 0, 1, deltaTime);
 	//checking aabb with player.
-	platform.collisionAABB(player);
+	player.AABB(platform);
+	player.AABB(plat2);
+	
 
 
 	glFlush();

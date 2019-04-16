@@ -6,17 +6,21 @@
 #include "Level.h"
 
 
+class Platform;
+
 class Entity {
 public:
-	float posX = 0, posY = 0, velXL = 0, velXR = 0, velYU = 0, velYD = 0;
+	float posX = 0, posY = 0, velX = 0, velY = 0;
+	float oldPosX, oldPosY;
 	bool grounded = true;
 	bool lPressed = false;
 	bool rPressed = false;
 	float newPosX, newPosY;
 	bool collidingXLeft = false, collidingXRight = false, collidingAboveLeft = false, collidingAboveRight = false, collidingBelowLeft = false, collidingBelowRight = false;
-	bool debug = true;
 	Level* level;
+	bool enemyMove = true;
 
+	bool debug = false;
 	//Constructor for positioning the entity
 
 	Entity(float x, float y, Level& level) {
@@ -26,8 +30,9 @@ public:
 	}
 
 	void updatePos(float deltaTime);
-	void drawEntity(Level level, float deltaTime);
+	void drawEntity(Level level,bool enemy,float deltaTime);
 	void gravity(float deltaTime);
 	void collision();
-	void collisionResponse(int oldPosX, int oldPosY);
+	//void collisionResponse();
+	void Entity::AABB(Platform p);
 };

@@ -27,9 +27,9 @@ void Level::drawLevel(int level) {
 	levelTexture += "@------------------------------------------------@";
 	levelTexture += "@---------=--------------------------------------@";
 	levelTexture += "@--------=-=----------------=--------------------@";
-	levelTexture += "@-------=---=------------=----==-----------------@";
-	levelTexture += "@-----=------=-----------=------==-------==--==--@";
-	levelTexture += "@----=--------=----------=-===----=-----=--------@";
+	levelTexture += "@-------=---=------------=----=----------o-------@";
+	levelTexture += "@-----=------=-----------=---------------==--==--@";
+	levelTexture += "@----=--------=----------=---=---------==--oo----@";
 	levelTexture += "@---=----------=---------=---=--=---=------------@";//y=20,x=51
 //This beibe reverses the whole string, not just X or Y. Now it starts bottom right->top left
 	std::reverse(levelTexture.begin(), levelTexture.end());
@@ -41,10 +41,10 @@ void Level::drawLevel(int level) {
 			case '=':
 				glColor3f(0.5, 0.2, 0.3);
 				glBegin(GL_POLYGON);
-				glVertex2d(x * tileWidth, y * tileHeight);
-				glVertex2d(x * tileWidth + tileWidth, y * tileHeight);
-				glVertex2d(x * tileWidth + tileWidth, y * tileHeight + tileHeight);
-				glVertex2d(x * tileWidth, y * tileHeight + tileHeight);
+				glVertex2d(x * tileWidth, y * tileHeight); //bot left
+				glVertex2d(x * tileWidth + tileWidth, y * tileHeight);  //bot right
+				glVertex2d(x * tileWidth + tileWidth, y * tileHeight + tileHeight); //top right
+				glVertex2d(x * tileWidth, y * tileHeight + tileHeight); //top left
 				glEnd();
 				break;
 
@@ -56,6 +56,18 @@ void Level::drawLevel(int level) {
 				glVertex2d(x * tileWidth + tileWidth, y * tileHeight + tileHeight);
 				glVertex2d(x * tileWidth, y * tileHeight + tileHeight);
 				glEnd();
+				break;
+			
+			case 'o':
+				if (visible) {
+					glColor3f(0, 1, 1);
+					glBegin(GL_POLYGON);
+					glVertex2d(x * tileWidth + tileWidth / 4, y * tileHeight + tileHeight / 4);
+					glVertex2d(x * tileWidth + tileWidth / 2, y * tileHeight + tileHeight / 4);
+					glVertex2d(x * tileWidth + tileWidth / 2, y * tileHeight + tileHeight / 2);
+					glVertex2d(x * tileWidth + tileWidth / 4, y * tileHeight + tileHeight / 2);
+					glEnd();
+				}
 				break;
 			}
 		}

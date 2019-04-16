@@ -8,10 +8,11 @@
 class Level {
 private:
 	int levelWidth = 50, levelHeight = 20;
-	int tileWidth = 50;
-	int tileHeight = 50;
+	int const tileWidth = 50;
+	int const tileHeight = 50;
 	std::string levelTexture = "";
 	bool colliding = false;
+	bool visible = true;
 public:
 	int getLevelWidth()
 	{
@@ -28,6 +29,11 @@ public:
 	int getTileHeight()
 	{
 		return tileHeight;
+	}
+	void changeVisibility()
+	{
+		if (visible)
+			visible = false;
 	}
 	char getTile(int x, int y);
 	void drawLevel(int level);
