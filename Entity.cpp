@@ -1,8 +1,10 @@
 #include "Platform.h"
+#include "Entity.h"
+#include "Player.h"
+#include <typeinfo>
 
 
-//Updating position of the entity
-void Entity::updatePos(float deltaTime) 
+void Entity::updatePos(float deltaTime)
 {
 	oldPosX = newPosX;
 	oldPosY = newPosY;
@@ -19,7 +21,7 @@ void Entity::updatePos(float deltaTime)
 	//system("cls");
 	//std::cout << newPosX << " X" << std::endl;
 	//std::cout << newPosY << " Y" << std::endl;
-	collision();
+	//collision();
 	//collisionResponse(oldPosX, oldPosY);
 	//reducing velocity when moving right
 	if (rPressed == false) {
@@ -39,16 +41,11 @@ void Entity::updatePos(float deltaTime)
 	}
 	lPressed = false;
 	rPressed = false;
-	collidingXLeft = false;
-	collidingXRight = false;
-	collidingAboveLeft = false;
-	collidingAboveRight = false;
-	collidingBelowLeft = false;
-	collidingBelowRight = false;
 }
 
+
 //Draws entity
-void Entity::drawEntity(Level level,bool enemy, float deltaTime) 
+void Entity::drawEntity(bool enemy, float deltaTime) 
 {
 	if (!enemy) {//player movement and drawing
 		glColor3f(0, 1, 0);
@@ -85,183 +82,64 @@ void Entity::drawEntity(Level level,bool enemy, float deltaTime)
 }
 
 
-void Entity::gravity(float deltaTime) 
+void Entity::AABB(Entity& ent)
 {
-	if (!grounded) {//if player is in the air, reduce velocity
-		velY -= 0.025 * deltaTime * 0.5;
+	//bool x = newPosX + width >= ent.getX() && ent.getX() + ent.width >= newPosX;
+	//bool y = newPosY + height >= ent.getY() && ent.getY() + ent.height >= newPosY;
+
+	collideX = false;
+	collideY = false;
+	////if the entity is platform, use 
+	//if (typeid(ent) == typeid(Platform)) {
+	//	if (newPosX < (ent.getX() + ent.width) &&
+	//		newPosX + 50 > ent.getX() &&
+	//		newPosY < (ent.getY() + ent.height) &&
+	//		newPosY + 50 > ent.getY())
+	//	{
+	//		if (newPosX < (ent.getX() + ent.width) &&
+	//			newPosX + ent.width > ent.getX()) {
+	//			collideX = true;
+	//			
+	//		}
+	//		if (newPosY < (ent.getY() + ent.height) &&
+	//			newPosY + ent.height > ent.getY()) {
+	//			collideY = true;
+	//		}
+	//	}
+	//}
+	//else {
+		if (newPosX < (ent.getX() + ent.width) &&
+			newPosX + width > ent.getX() &&
+			newPosY < (ent.getY() + ent.height) &&
+			newPosY + height > ent.getY())
+		{
+		
+			if (newPosX < (ent.getX() + ent.width) &&
+				newPosX + width > ent.getX()) {
+				collideX = true;
+			
+			}
+			if (newPosY < (ent.getY() + ent.height) &&
+				newPosY + height > ent.getY()) {
+				collideY = true;
+			}
+		}
+	//}
+
+	//if(x && y)
+		AABBResponse();
+}
+
+void Entity::AABBResponse()
+{
+	if(collideX)
+	{
+		velX = 0;
+		newPosX = oldPosX;
 	}
-	if (newPosY <= 0) { //if player is on the ground, set grounded to true
-		grounded = true;
-		newPosY = 0; //dont allow player to fall below ground
+	if(collideY)
+	{
 		velY = 0;
-	}
-}
-
-//Collision detection
-void Entity::collision()
-{
-	//+ 1 tile, not pixels(50)
-	int left_tile	= newPosX / 50;
-	int right_tile	= newPosX / 50 + 1;
-	int top_tile	= newPosY / 50 + 1;
-	int bottom_tile = newPosY / 50;
-	if (left_tile < 0)
-		left_tile = 0;
-	if (right_tile > level->getTileWidth())
-		right_tile = level->getTileWidth();
-	if (top_tile > level->getTileHeight())
-		top_tile = level->getTileHeight();
-	if (bottom_tile < 0)
-		bottom_tile = 0;
-	if (debug) {
-		//bottom left tile
-		glColor3f(1, 1, 1);
-		glBegin(GL_LINE_LOOP);
-		glVertex2d(left_tile * level->getTileWidth(), bottom_tile * 50);//bot left
-		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth(), bottom_tile * 50);//bot right
-		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth(), bottom_tile * level->getTileHeight() + level->getTileHeight());//top right
-		glVertex2d(left_tile * level->getTileWidth(), bottom_tile * level->getTileHeight() + level->getTileHeight());//top left
-		glEnd();
-
-		glBegin(GL_LINE_LOOP);
-		//bottom right tile
-		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth(), bottom_tile * 50);//bot left
-		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth() + level->getTileWidth(), bottom_tile * 50);//bot right
-		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth() + level->getTileWidth(), bottom_tile * level->getTileHeight() + level->getTileHeight());//top right
-		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth(), bottom_tile * level->getTileHeight() + level->getTileHeight());//top left
-		glEnd();
-
-		glBegin(GL_LINE_LOOP);
-		//top left tile
-		glVertex2d(left_tile * level->getTileWidth(), top_tile * 50);//bot left
-		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth(), top_tile * 50);//bot right
-		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth(), top_tile * level->getTileHeight() + level->getTileHeight());//top right
-		glVertex2d(left_tile * level->getTileWidth(), top_tile * level->getTileHeight() + level->getTileHeight());//top left
-		glEnd();
-
-		glBegin(GL_LINE_LOOP);
-		//top right tile
-		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth(), top_tile * 50);//bot left
-		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth() + level->getTileWidth(), top_tile * 50);//bot right
-		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth() + level->getTileWidth(), top_tile * level->getTileHeight() + level->getTileHeight());//top right
-		glVertex2d(left_tile * level->getTileWidth() + level->getTileWidth(), top_tile * level->getTileHeight() + level->getTileHeight());//top left
-		glEnd();
-	}
-	collidingXLeft = false;
-	collidingXRight = false;
-	collidingAboveLeft = false;
-	collidingAboveRight = false;
-	collidingBelowLeft = false;
-	collidingBelowRight = false;
-	//collision left/right
-	char tileLeftX = level->getTile(left_tile, bottom_tile);
-	char tileRightX = level->getTile(right_tile, bottom_tile);
-	//collision above and below
-	char tileAboveLeft = level->getTile(left_tile, top_tile);
-	char tileAboveRight = level->getTile(right_tile, top_tile);
-	char tileBelowLeft = level->getTile((left_tile), bottom_tile);
-	char tileBelowRight = level->getTile(right_tile, bottom_tile);
-	//Blocks collision
-	if(tileLeftX== '=' || tileLeftX == '@')
-	{
-		//std::cout << "Left" << std::endl;
-		collidingXLeft = true;
-	}
-	if(tileRightX == '=' || tileRightX == '@')
-	{
-		//std::cout << " Right" << std::endl;
-		collidingXRight = true;
-	}
-
-	if (tileAboveLeft == '=' || tileAboveLeft == '@')
-	{
-		collidingAboveLeft = true;
-	}
-	if (tileAboveRight == '=' || tileAboveRight == '@')
-	{
-		collidingAboveRight = true;
-	}
-	if(tileBelowLeft == '=' || tileBelowLeft == '@')
-	{
-		collidingBelowLeft = true;
-	}
-	if (tileBelowRight == '=' || tileBelowRight == '@')
-	{
-		collidingBelowRight = true;
-	}
-
-	//collectables collision
-	if(tileLeftX =='o')
-		level->changeVisibility();
-	if(tileRightX == 'o')
-		level->changeVisibility();
-	if (tileAboveLeft == 'o')
-		level->changeVisibility();
-	if (tileAboveRight == 'o')
-		level->changeVisibility();
-	if (tileBelowLeft == 'o')
-		level->changeVisibility();
-	if (tileBelowRight == 'o')
-		level->changeVisibility();
-
-}
-
-//
-//void Entity::collisionResponse()
-//{
-//	//colliding X
-//	if (collidingXLeft) {
-//		newPosX = oldPosX;
-//	}
-//	if (collidingXRight) {
-//		newPosX = oldPosX;
-//	}
-//	//colliding Y
-//	if (collidingAboveLeft)
-//	{
-//		newPosY = oldPosY;	
-//	}
-//	if (collidingAboveRight)
-//	{
-//		newPosY = oldPosY;
-//	}
-//	if (collidingBelowLeft)
-//	{
-//		newPosY = oldPosY;
-//		grounded = true;
-//	}
-//	if (collidingBelowRight)
-//	{
-//		newPosY = oldPosY;
-//		grounded = true; 
-//	}
-//}
-
-
-void Entity::AABB(Platform p)
-{
-	if (newPosX < (p.getX() + p.getWidth()) &&
-		newPosX + 50 > p.getX() &&
-		newPosY < (p.getY() + p.getHeight()) &&
-		newPosY + 50 > p.getY())
-	{
-		/*system("cls");
-		std::cout << "Colliding" << std::endl;*/
-		if (newPosX < (p.getX() + p.getWidth()) &&
-			newPosX + 50 > p.getX()) {
-			velX = 0;
-			newPosX = oldPosX;
-			/*system("cls");
-			std::cout << "Colliding SIDES" << std::endl;*/
-		}
-		//Split top and bottom?
-		//Check if on top of the plat, if yes, then update player's velocity with platform's velocity.
-		if (newPosY < (p.getY() + p.getHeight()) &&
-			newPosY + 50 > p.getY()) {
-			velY = 0;
-			newPosY = oldPosY;
-			/*system("cls");
-			std::cout << "Colliding UP/DOWN" << std::endl;*/
-		}
+		newPosY = oldPosY;
 	}
 }

@@ -1,38 +1,46 @@
+#pragma once
 #include "GL\freeglut.h"
 #include <math.h>
 #include <iostream>
 #include <chrono>
 #include <string>
-#include "Level.h"
 
 
-class Platform;
 
 class Entity {
 public:
 	float posX = 0, posY = 0, velX = 0, velY = 0;
 	float oldPosX, oldPosY;
-	bool grounded = true;
-	bool lPressed = false;
-	bool rPressed = false;
 	float newPosX, newPosY;
-	bool collidingXLeft = false, collidingXRight = false, collidingAboveLeft = false, collidingAboveRight = false, collidingBelowLeft = false, collidingBelowRight = false;
-	Level* level;
-	bool enemyMove = true;
+	bool lPressed, rPressed;
+	bool collideX = false , collideY = false;
+	float width, height;
 
 	bool debug = false;
 	//Constructor for positioning the entity
 
-	Entity(float x, float y, Level& level) {
+	Entity(float x, float y, float w, float h) {
 		newPosX = x;
 		newPosY = y;
-		this->level = &level;
+		width = w;
+		height = h;
 	}
 
+	float getX()
+	{
+		return newPosX;
+	}
+
+	float getY()
+	{
+		return newPosY;
+	}
+
+	void AABBResponse();
 	void updatePos(float deltaTime);
-	void drawEntity(Level level,bool enemy,float deltaTime);
+	void drawEntity(bool enemy,float deltaTime = 0);
 	void gravity(float deltaTime);
 	void collision();
 	//void collisionResponse();
-	void Entity::AABB(Platform p);
+	void Entity::AABB(Entity& ent);
 };

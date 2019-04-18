@@ -1,4 +1,5 @@
 #include "Level.h"
+#include "Platform.h"
 
 char Level::getTile(int x, int y) {
 	if (x >= 0 && x <= levelWidth && y >= 0 && y <= levelHeight) {
@@ -10,11 +11,19 @@ char Level::getTile(int x, int y) {
 		return ' ';
 }
 
-void Level::drawLevel(int level) {
+void Level::drawLevel(float dT)
+{
+	for(Entity ent : entities)
+	{
+		ent.drawEntity(0, dT);
+	}
+}
+
+void Level::generateLevel(int level) {
 	levelTexture = "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@";
-	levelTexture += "@---=-------------=---------------=----------==--@";
-	levelTexture += "@---=-------------=----========---=-----------=--@";
-	levelTexture += "@---====----------=---------------=-----------=--@";
+	levelTexture += "@-----------------=---------------=--------------@";
+	levelTexture += "@-----------------=----========---=--------------@";
+	levelTexture += "@-----------------=---------------=--------------@";
 	levelTexture += "@------------------------------------------------@";
 	levelTexture += "@------------------------------------------------@";
 	levelTexture += "@------------------------------------------------@";
@@ -25,12 +34,12 @@ void Level::drawLevel(int level) {
 	levelTexture += "@------------------------------------------------@";
 	levelTexture += "@------------------------------------------------@";
 	levelTexture += "@------------------------------------------------@";
-	levelTexture += "@---------=--------------------------------------@";
-	levelTexture += "@--------=-=----------------=--------------------@";
-	levelTexture += "@-------=---=------------=----=----------o-------@";
-	levelTexture += "@-----=------=-----------=---------------==--==--@";
-	levelTexture += "@----=--------=----------=---=---------==--oo----@";
-	levelTexture += "@---=----------=---------=---=--=---=------------@";//y=20,x=51
+	levelTexture += "@------------------------------------------------@";
+	levelTexture += "@------------------------=-----------------------@";
+	levelTexture += "@------------------------=---------------o-------@";
+	levelTexture += "@------------------------=-----------------------@";
+	levelTexture += "@------------------------=------pppp-------oo----@";
+	levelTexture += "@------------------------=-----------------------@";//y=20,x=51
 //This beibe reverses the whole string, not just X or Y. Now it starts bottom right->top left
 	std::reverse(levelTexture.begin(), levelTexture.end());
 	for (int x = levelWidth; x >= 0 ; x--) {
@@ -39,35 +48,19 @@ void Level::drawLevel(int level) {
 			switch (tileID)
 			{
 			case '=':
-				glColor3f(0.5, 0.2, 0.3);
-				glBegin(GL_POLYGON);
-				glVertex2d(x * tileWidth, y * tileHeight); //bot left
-				glVertex2d(x * tileWidth + tileWidth, y * tileHeight);  //bot right
-				glVertex2d(x * tileWidth + tileWidth, y * tileHeight + tileHeight); //top right
-				glVertex2d(x * tileWidth, y * tileHeight + tileHeight); //top left
-				glEnd();
+				entities.push_back(Entity(x * tileWidth, y * tileHeight, 50, 50));
 				break;
-
 			case '@':
-				glColor3f(0, 0.35, 0.86);
-				glBegin(GL_POLYGON);
-				glVertex2d(x * tileWidth, y * tileHeight);
-				glVertex2d(x * tileWidth + tileWidth, y * tileHeight);
-				glVertex2d(x * tileWidth + tileWidth, y * tileHeight + tileHeight);
-				glVertex2d(x * tileWidth, y * tileHeight + tileHeight);
-				glEnd();
+
+				entities.push_back(Entity(x * tileWidth, y * tileHeight, 50, 50));
 				break;
 			
 			case 'o':
-				if (visible) {
-					glColor3f(0, 1, 1);
-					glBegin(GL_POLYGON);
-					glVertex2d(x * tileWidth + tileWidth / 4, y * tileHeight + tileHeight / 4);
-					glVertex2d(x * tileWidth + tileWidth / 2, y * tileHeight + tileHeight / 4);
-					glVertex2d(x * tileWidth + tileWidth / 2, y * tileHeight + tileHeight / 2);
-					glVertex2d(x * tileWidth + tileWidth / 4, y * tileHeight + tileHeight / 2);
-					glEnd();
-				}
+				entities.push_back(Entity(x * tileWidth, y * tileHeight, 50, 50));
+				break;
+
+			case 'p':
+				entities.push_back(Platform(x * tileWidth, y * tileHeight, 50, 50));
 				break;
 			}
 		}

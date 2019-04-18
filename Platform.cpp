@@ -42,24 +42,24 @@ void Platform::updatePosY(int travelDistance, bool up, float deltaTime)
 			moveY = true;
 	}
 }
-
-void Platform::drawPlatform(int travelDistance, bool x, bool y, float deltaTime)
-{
-	if(x)
-	updatePosX(travelDistance, x, deltaTime);
-	
-	if(y)
-		updatePosY(travelDistance, y, deltaTime);
-	
-	glColor3f(1, 1, 0);
-	//add texture to the polygon here.
-	glBegin(GL_POLYGON);
-		glVertex2d(newPosX, newPosY);	 //bottom left
-		glVertex2d(newPosX + width, newPosY); //bottom right
-		glVertex2d(newPosX + width, newPosY + height); //top right
-		glVertex2d(newPosX, newPosY + height);//top left
-	glEnd();
-}
+//
+//void Platform::drawPlatform(int travelDistance, bool x, bool y, float deltaTime)
+//{
+//	if(x)
+//	updatePosX(travelDistance, x, deltaTime);
+//	
+//	if(y)
+//		updatePosY(travelDistance, y, deltaTime);
+//	
+//	glColor3f(1, 1, 0);
+//	//add texture to the polygon here.
+//	glBegin(GL_POLYGON);
+//		glVertex2d(newPosX, newPosY);	 //bottom left
+//		glVertex2d(newPosX + width, newPosY); //bottom right
+//		glVertex2d(newPosX + width, newPosY + height); //top right
+//		glVertex2d(newPosX, newPosY + height);//top left
+//	glEnd();
+//}
 
 //void Platform::collisionAABB(Entity ent)
 //{

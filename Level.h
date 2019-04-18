@@ -4,6 +4,8 @@
 #include <iostream>
 #include <chrono>
 #include <string>
+#include <vector>
+#include "Entity.h"
 
 class Level {
 private:
@@ -13,6 +15,8 @@ private:
 	std::string levelTexture = "";
 	bool colliding = false;
 	bool visible = true;
+	std::vector<Entity> entities;
+
 public:
 	int getLevelWidth()
 	{
@@ -35,6 +39,13 @@ public:
 		if (visible)
 			visible = false;
 	}
+
+	std::vector<Entity> getEntityVector()
+	{
+		return entities;
+	}
+	
 	char getTile(int x, int y);
-	void drawLevel(int level);
+	void generateLevel(int level);
+	void drawLevel(float dT);
 };

@@ -1,7 +1,12 @@
 //includes areas for keyboard control, mouse control, resizing the window
 //and draws a spinning rectangle
 
+//#include "Platform.h"
+#include <vector>
+#include "Entity.h"
+#include "Level.h"
 #include "Platform.h"
+#include "Player.h"
 
 
 using namespace std;
@@ -23,15 +28,15 @@ void update();				//called in winmain to update variables
 
 
 Level level;
-Entity player(50,0, level); // keep in mind each field/tile size is 50. x=1;
-Entity enemy1(300, 0, level);
+Player player(50,0, 50, 50); // keep in mind each field/tile size is 50. x=1;
+Entity enemy1(300, 0, 50, 20);
 Platform platform(150, 20, 500, 50);
 Platform plat2(100, 30, 250, 25);
-
-
+vector<Entity> allEntities;
 
 
 void camera() {
+
 	//call camera on the centre of playerPos
 	camX = player.newPosX - (screenWidth / 2);
 	camY = player.newPosY - (screenHeight / 2);
@@ -64,9 +69,9 @@ void keyOperations() {
 		exit(0);
 	}
 	if (keyStates['w']) {
-		if (player.grounded) {
+		if (player.isGrounded()) {
 			player.velY += 2;
-			player.grounded = false;
+			player.ungroundPlayer();
 		}
 	}
 	if (keyStates['s']) {
@@ -94,18 +99,20 @@ void display()
 
 	camera();
 	keyOperations();
-	level.drawLevel(1);
 	glPointSize(10.0);
 	glColor3f(0, 1, 0);
-	player.drawEntity(level,0,deltaTime);
-	enemy1.drawEntity(level, 1,deltaTime);
-	platform.drawPlatform(1500, 1,0,deltaTime);
-	plat2.drawPlatform(2000, 0, 1, deltaTime);
-	//checking aabb with player.
-	player.AABB(platform);
-	player.AABB(plat2);
 	
-
+	level.drawLevel(deltaTime);
+	player.drawEntity(0,deltaTime);
+	enemy1.drawEntity(1,deltaTime);
+	//platform.drawPlatform(1500, 1,0,deltaTime);
+	//plat2.drawPlatform(2000, 0, 1, deltaTime);
+	//player collides with everything else.
+	for(Entity ent : allEntities)
+	{
+		player.AABB(ent);
+	}
+	
 
 	glFlush();
 	glutSwapBuffers();
@@ -130,6 +137,7 @@ void reshape(int width, int height)		// Resize the OpenGL window
 void init()
 {
 	glClearColor(0.0,0.0,0.0,1.0);						//sets the clear colour to yellow
+
 	//glClear(GL_COLOR_BUFFER_BIT) in the display function
 	//will clear the buffer to this colour.
 }
@@ -169,7 +177,12 @@ int main(int argc, char **argv)
 	//add keyboard callback.
 	glutKeyboardFunc(keyDown);
 	glutKeyboardUpFunc(keyUp);
-	
+
+	level.generateLevel(1);
+	allEntities = level.getEntityVector();
+	allEntities.push_back(platform);
+	allEntities.push_back(plat2);
+
 	glutMainLoop();
 	
 	return 0;
