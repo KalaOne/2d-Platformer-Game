@@ -84,12 +84,9 @@ void Entity::drawEntity(bool enemy, float deltaTime)
 
 void Entity::AABB(Entity& ent)
 {
-	//bool x = newPosX + width >= ent.getX() && ent.getX() + ent.width >= newPosX;
-	//bool y = newPosY + height >= ent.getY() && ent.getY() + ent.height >= newPosY;
-
 	collideX = false;
 	collideY = false;
-	////if the entity is platform, use 
+//Colliding when the entity is platform
 	//if (typeid(ent) == typeid(Platform)) {
 	//	if (newPosX < (ent.getX() + ent.width) &&
 	//		newPosX + 50 > ent.getX() &&
@@ -108,26 +105,39 @@ void Entity::AABB(Entity& ent)
 	//	}
 	//}
 	//else {
-		if (newPosX < (ent.getX() + ent.width) &&
-			newPosX + width > ent.getX() &&
-			newPosY < (ent.getY() + ent.height) &&
-			newPosY + height > ent.getY())
-		{
-		
-			if (newPosX < (ent.getX() + ent.width) &&
-				newPosX + width > ent.getX()) {
-				collideX = true;
-			
-			}
-			if (newPosY < (ent.getY() + ent.height) &&
-				newPosY + height > ent.getY()) {
-				collideY = true;
-			}
+//Collision with every entity
+	if (newPosX < (ent.getX() + ent.width) &&
+		newPosX + width > ent.getX() &&
+		newPosY < (ent.getY() + ent.height) &&
+		newPosY + height > ent.getY())
+	{
+		//player on top of entity
+		if (oldPosY >= (ent.getY() + ent.height) - 0.1) {
+			//std::cout << "collide feet" << std::endl;
+			collideY = true;
+			onBlock = true;
 		}
-	//}
+		//left of entity
+		else if ((oldPosX + width) < ent.getX() + 0.02)
+		{
+			//std::cout << "collide right" << std::endl;
+			collideX = true;
+		}
+		//right of entity
+		else if (oldPosX > (ent.getX() + ent.width) - 0.02) {
+			//std::cout << "collide left" << std::endl;
+			collideX = true;
+		}
 
-	//if(x && y)
-		AABBResponse();
+		//player is below
+		else if ((oldPosY + height) >= ent.getY() - 0.1) {
+			//std::cout << "collide head" << std::endl;
+			collideY = true;
+		}
+
+	}
+	
+	AABBResponse();
 }
 
 void Entity::AABBResponse()

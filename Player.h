@@ -3,7 +3,7 @@
 
 class Player : public Entity
 {
-	bool grounded = true;
+
 
 public:
 
@@ -17,6 +17,16 @@ public:
 	void ungroundPlayer()
 	{
 		grounded = false;
+	}
+
+	bool isOnBlock()
+	{
+		return onBlock;
+	}
+
+	void unblockPlayer()
+	{
+		onBlock = false;
 	}
 	
 	void gravity(float deltaTime);

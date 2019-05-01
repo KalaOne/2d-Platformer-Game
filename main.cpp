@@ -30,10 +30,10 @@ void update();				//called in winmain to update variables
 Level level;
 Player player(50,0, 50, 50); // keep in mind each field/tile size is 50. x=1;
 Entity enemy1(300, 0, 50, 20);
-Platform platform(150, 20, 500, 50);
-Platform plat2(100, 30, 250, 25);
+//Platform platform(150, 20, 500, 50);
+//Platform plat2(100, 30, 250, 25);
 vector<Entity> allEntities;
-
+vector<Platform> platforms;
 
 void camera() {
 
@@ -69,9 +69,11 @@ void keyOperations() {
 		exit(0);
 	}
 	if (keyStates['w']) {
-		if (player.isGrounded()) {
+		if (player.isGrounded() || player.isOnBlock()) {
+			//player.posY += 0.1;
 			player.velY += 2;
 			player.ungroundPlayer();
+			player.unblockPlayer();
 		}
 	}
 	if (keyStates['s']) {
@@ -87,6 +89,8 @@ void keyOperations() {
 	}
 }
 
+
+
 void display()																	
 {	
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -98,22 +102,31 @@ void display()
 	//cout << deltaTime << endl;
 
 	camera();
-	keyOperations();
+	
 	glPointSize(10.0);
 	glColor3f(0, 1, 0);
-	
+
+	for (Platform plat : platforms)
+	{
+		plat.updatePosX(500, true, deltaTime);
+		plat.updatePosY(300,1,deltaTime);
+		
+	}
+
 	level.drawLevel(deltaTime);
 	player.drawEntity(0,deltaTime);
 	enemy1.drawEntity(1,deltaTime);
+
+	
 	//platform.drawPlatform(1500, 1,0,deltaTime);
 	//plat2.drawPlatform(2000, 0, 1, deltaTime);
+
 	//player collides with everything else.
 	for(Entity ent : allEntities)
 	{
 		player.AABB(ent);
 	}
 	
-
 	glFlush();
 	glutSwapBuffers();
 	player.gravity(deltaTime);
@@ -147,7 +160,7 @@ void init()
 
 void update()
 {
-
+	keyOperations();
 	glutPostRedisplay();
 }
 /**************** END OPENGL FUNCTIONS *************************/
@@ -180,8 +193,7 @@ int main(int argc, char **argv)
 
 	level.generateLevel(1);
 	allEntities = level.getEntityVector();
-	allEntities.push_back(platform);
-	allEntities.push_back(plat2);
+	platforms = level.getPlatformVector();
 
 	glutMainLoop();
 	

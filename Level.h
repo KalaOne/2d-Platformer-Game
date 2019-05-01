@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include "Entity.h"
+#include "Platform.h"
 
 class Level {
 private:
@@ -16,6 +17,7 @@ private:
 	bool colliding = false;
 	bool visible = true;
 	std::vector<Entity> entities;
+	std::vector<Platform> platforms;
 
 public:
 	int getLevelWidth()
@@ -40,6 +42,10 @@ public:
 			visible = false;
 	}
 
+	std::vector<Platform> getPlatformVector()
+	{
+		return platforms;
+	}
 	std::vector<Entity> getEntityVector()
 	{
 		return entities;

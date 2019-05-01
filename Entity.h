@@ -15,6 +15,8 @@ public:
 	bool lPressed, rPressed;
 	bool collideX = false , collideY = false;
 	float width, height;
+	bool grounded = true;
+	bool onBlock = false;
 
 	bool debug = false;
 	//Constructor for positioning the entity

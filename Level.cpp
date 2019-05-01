@@ -37,9 +37,9 @@ void Level::generateLevel(int level) {
 	levelTexture += "@------------------------------------------------@";
 	levelTexture += "@------------------------=-----------------------@";
 	levelTexture += "@------------------------=---------------o-------@";
-	levelTexture += "@------------------------=-----------------------@";
-	levelTexture += "@------------------------=------pppp-------oo----@";
-	levelTexture += "@------------------------=-----------------------@";//y=20,x=51
+	levelTexture += "@------------------------=-----ppp---------------@";
+	levelTexture += "@------------------------=-----------------oo----@";
+	levelTexture += "@------------------------=--------------------o--@";//y=20,x=51
 //This beibe reverses the whole string, not just X or Y. Now it starts bottom right->top left
 	std::reverse(levelTexture.begin(), levelTexture.end());
 	for (int x = levelWidth; x >= 0 ; x--) {
@@ -60,7 +60,9 @@ void Level::generateLevel(int level) {
 				break;
 
 			case 'p':
-				entities.push_back(Platform(x * tileWidth, y * tileHeight, 50, 50));
+				Platform plat = Platform(20, 20, x * tileWidth, y * tileHeight);
+				entities.push_back(plat);
+				platforms.push_back(plat);
 				break;
 			}
 		}
