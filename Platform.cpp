@@ -1,8 +1,8 @@
 #include "Platform.h"
 
-void Platform::updatePosX(int travelDistance, bool right, float deltaTime)
+void Platform::updatePosX(int travelDistance, bool right, float dt)
 {
-	//If deltaTime used for platform movement, it buggs out..
+	//If dt used for platform movement, it buggs out..
 	if(moveX)
 	{
 		if (currentDistance <= travelDistance) {
@@ -22,7 +22,7 @@ void Platform::updatePosX(int travelDistance, bool right, float deltaTime)
 	}
 }
 
-void Platform::updatePosY(int travelDistance, bool up, float deltaTime)
+void Platform::updatePosY(int travelDistance, bool up, float dt)
 {
 	if (moveY)
 	{
@@ -42,34 +42,44 @@ void Platform::updatePosY(int travelDistance, bool up, float deltaTime)
 			moveY = true;
 	}
 }
-//
-//void Platform::drawPlatform(int travelDistance, bool x, bool y, float deltaTime)
-//{
-//	if(x)
-//	updatePosX(travelDistance, x, deltaTime);
-//	
-//	if(y)
-//		updatePosY(travelDistance, y, deltaTime);
-//	
-//	glColor3f(1, 1, 0);
-//	//add texture to the polygon here.
-//	glBegin(GL_POLYGON);
-//		glVertex2d(newPosX, newPosY);	 //bottom left
-//		glVertex2d(newPosX + width, newPosY); //bottom right
-//		glVertex2d(newPosX + width, newPosY + height); //top right
-//		glVertex2d(newPosX, newPosY + height);//top left
-//	glEnd();
-//}
 
-//void Platform::collisionAABB(Entity ent)
-//{
-//	if (ent.newPosX < (getX() + getWidth()) &&
-//		ent.newPosX + 50 > getX() &&
-//		ent.newPosY < (getY() + getHeight()) &&
-//		ent.newPosY + 50 > getY())
-//	{
-//		/*system("cls");
-//		std::cout << "Colliding" << std::endl;*/
-//
-//	}
-//}
+void Platform::drawPlatform(int travelDistance, bool x, bool y, float dt)
+{
+	if(x)
+		updatePosX(travelDistance, x, dt);
+	
+	if(y)
+		updatePosY(travelDistance, y, dt);
+	
+	glColor3f(1, 1, 0);
+	//add texture to the polygon here.
+	glBegin(GL_POLYGON);
+		glVertex2d(newPosX, newPosY);	 //bottom left
+		glVertex2d(newPosX + width, newPosY); //bottom right
+		glVertex2d(newPosX + width, newPosY + height); //top right
+		glVertex2d(newPosX, newPosY + height);//top left
+	glEnd();
+}
+
+
+void Platform::drawPlatFromMap(float dt)
+{
+	if(moveRight)
+	{
+		newPosX += velX * dt;
+	}
+	else
+	{
+		newPosX -= velX * dt;
+	}
+	glColor3f(1, 1, 0);
+	glPushMatrix();
+	
+	glBegin(GL_POLYGON);
+		glVertex2d(newPosX, newPosY);	 //bottom left
+		glVertex2d(newPosX + width, newPosY); //bottom right
+		glVertex2d(newPosX + width, newPosY + height); //top right
+		glVertex2d(newPosX, newPosY + height);//top left
+	glEnd();
+	glPopMatrix();
+}

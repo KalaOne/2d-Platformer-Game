@@ -2,11 +2,13 @@
 //and draws a spinning rectangle
 
 //#include "Platform.h"
+#include "Image_Loading/nvImage.h"
 #include <vector>
 #include "Entity.h"
 #include "Level.h"
 #include "Platform.h"
 #include "Player.h"
+
 
 
 using namespace std;
@@ -16,7 +18,8 @@ bool* keyStates = new bool[256];
 float grav = 0;
 float camX = 0, camY = 0;
 float oldTime = 0.0;
-float deltaTime;
+float dt;
+int levels = 1;
 
 
 //OPENGL FUNCTION PROTOTYPES
@@ -28,10 +31,10 @@ void update();				//called in winmain to update variables
 
 
 Level level;
-Player player(50,0, 50, 50); // keep in mind each field/tile size is 50. x=1;
-Entity enemy1(300, 0, 50, 20);
-//Platform platform(150, 20, 500, 50);
-//Platform plat2(100, 30, 250, 25);
+Player player(50,0, 49, 49); // keep in mind each field/tile size is 50. x=1;
+Entity enemy1(300, 0, 25, 25);
+Platform plat1(500, 50, 150, 20);
+Platform plat2(250, 25, 100, 30);
 vector<Entity> allEntities;
 vector<Platform> platforms;
 
@@ -82,14 +85,43 @@ void keyOperations() {
 
 	if (keyStates['a']) {
 		player.velX -= 0.5;
+		player.ungroundPlayer();
+		player.unblockPlayer();
 	}
 
 	if (keyStates['d']) {
 		player.velX += 0.5;
+		player.ungroundPlayer();
+		player.unblockPlayer();
 	}
 }
 
+GLuint loadPNG(char* name)
+{
+	// Texture loading object
+	nv::Image img;
 
+	GLuint myTextureID;
+
+	// Return true on success
+	if (img.loadImageFromFile(name))
+	{
+		glGenTextures(1, &myTextureID);
+		glBindTexture(GL_TEXTURE_2D, myTextureID);
+		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+		glTexImage2D(GL_TEXTURE_2D, 0, img.getInternalFormat(), img.getWidth(), img.getHeight(), 0, img.getFormat(), img.getType(), img.getLevel(0));
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
+	}
+
+	else
+		cout << "Failed to load texture. End of the world" << endl;;
+
+	return myTextureID;
+}
 
 void display()																	
 {	
@@ -97,39 +129,31 @@ void display()
 	glLoadIdentity();
 	//delta time
 	float newTime = glutGet(GLUT_ELAPSED_TIME);
-	deltaTime = (newTime - oldTime) * 0.75;
+	dt = (newTime - oldTime) * 0.75;
 	oldTime = newTime;
-	//cout << deltaTime << endl;
-
 	camera();
 	
-	glPointSize(10.0);
-	glColor3f(0, 1, 0);
+	//plat1.drawPlatform(1500, 1, 0, dt);
+	//plat2.drawPlatform(2000, 0, 1, dt);
 
-	for (Platform plat : platforms)
-	{
-		plat.updatePosX(500, true, deltaTime);
-		plat.updatePosY(300,1,deltaTime);
-		
-	}
-
-	level.drawLevel(deltaTime);
-	player.drawEntity(0,deltaTime);
-	enemy1.drawEntity(1,deltaTime);
-
-	
-	//platform.drawPlatform(1500, 1,0,deltaTime);
-	//plat2.drawPlatform(2000, 0, 1, deltaTime);
+	level.drawLevel(1, dt);
+	player.drawEntity(0,dt);
+	enemy1.drawEntity(1,dt);
 
 	//player collides with everything else.
 	for(Entity ent : allEntities)
 	{
 		player.AABB(ent);
 	}
+	for(Platform p : platforms)
+	{
+		player.platformAABB(p);
+	}
+	
 	
 	glFlush();
 	glutSwapBuffers();
-	player.gravity(deltaTime);
+	player.gravity(dt);
 }
 
 void reshape(int width, int height)		// Resize the OpenGL window
@@ -150,9 +174,11 @@ void reshape(int width, int height)		// Resize the OpenGL window
 void init()
 {
 	glClearColor(0.0,0.0,0.0,1.0);						//sets the clear colour to yellow
+	player.activeSprite = loadPNG("Assets/platform_gfx/hero/idle.png");
+	enemy1.activeSprite = loadPNG("Assets/platform_gfx/baddies/Totem_stand.png");
 
-	//glClear(GL_COLOR_BUFFER_BIT) in the display function
-	//will clear the buffer to this colour.
+	//glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 

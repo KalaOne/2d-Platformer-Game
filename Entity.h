@@ -6,6 +6,7 @@
 #include <string>
 
 
+class Platform;
 
 class Entity {
 public:
@@ -13,10 +14,12 @@ public:
 	float oldPosX, oldPosY;
 	float newPosX, newPosY;
 	bool lPressed, rPressed;
-	bool collideX = false , collideY = false;
+	bool collideX = false, collideY = false, collideAbove = false;
 	float width, height;
 	bool grounded = true;
 	bool onBlock = false;
+
+	GLuint activeSprite;
 
 	bool debug = false;
 	//Constructor for positioning the entity
@@ -44,5 +47,7 @@ public:
 	void gravity(float deltaTime);
 	void collision();
 	//void collisionResponse();
-	void Entity::AABB(Entity& ent);
+	void AABB(Entity& ent);
+	void platformAABB(Platform& plat);
+	void drawPlatform(bool moveX,bool moveY, float dt);
 };

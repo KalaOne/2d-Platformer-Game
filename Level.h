@@ -13,7 +13,9 @@ private:
 	int levelWidth = 50, levelHeight = 20;
 	int const tileWidth = 50;
 	int const tileHeight = 50;
-	std::string levelTexture = "";
+	std::string level1 = "";
+	std::string level2 = "";
+	std::string level3 = "";
 	bool colliding = false;
 	bool visible = true;
 	std::vector<Entity> entities;
@@ -53,5 +55,5 @@ public:
 	
 	char getTile(int x, int y);
 	void generateLevel(int level);
-	void drawLevel(float dT);
+	void drawLevel(int level,float dt);
 };

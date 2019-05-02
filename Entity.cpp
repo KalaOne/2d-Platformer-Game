@@ -43,41 +43,42 @@ void Entity::updatePos(float deltaTime)
 	rPressed = false;
 }
 
-
 //Draws entity
 void Entity::drawEntity(bool enemy, float deltaTime) 
 {
+	glPushMatrix();
 	if (!enemy) {//player movement and drawing
-		glColor3f(0, 1, 0);
+		glColor4f(0, 1, 0,0);
 		updatePos(deltaTime);
 		glEnable(GL_TEXTURE_2D);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-		//glBindTexture(GL_TEXTURE_2D, texName);
+		glBindTexture(GL_TEXTURE_2D, activeSprite);
 	//add texture to the polygon here.
 		glBegin(GL_POLYGON);
 		glTexCoord2f(0, 0); glVertex2d(newPosX, newPosY);	 //bottom left
-		glTexCoord2f(0, 1); glVertex2d(newPosX + 50, newPosY); //bottom right
-		glTexCoord2f(1, 1); glVertex2d(newPosX + 50, newPosY + 50); //top right
-		glTexCoord2f(1, 0); glVertex2d(newPosX, newPosY + 50);//top left
+		glTexCoord2f(1, 0); glVertex2d(newPosX + width, newPosY); //bottom right
+		glTexCoord2f(1, 1); glVertex2d(newPosX + width, newPosY + height); //top right
+		glTexCoord2f(0, 1); glVertex2d(newPosX, newPosY + height);//top left
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 	}
-	else
+	else if(enemy)
 	{
 		//Enemy movement and drawing here.
-		glColor3f(1, 0, 0);
+		glColor4f(1, 0, 0, 0);
 		glEnable(GL_TEXTURE_2D);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-		//glBindTexture(GL_TEXTURE_2D, texName);
+		glBindTexture(GL_TEXTURE_2D, activeSprite);
 	//add texture to the polygon here.
 		glBegin(GL_POLYGON);
 		glTexCoord2f(0, 0); glVertex2d(newPosX, newPosY);	 //bottom left
-		glTexCoord2f(0, 1); glVertex2d(newPosX + 50, newPosY); //bottom right
-		glTexCoord2f(1, 1); glVertex2d(newPosX + 50, newPosY + 50); //top right
-		glTexCoord2f(1, 0); glVertex2d(newPosX, newPosY + 50);//top left
+		glTexCoord2f(1, 0); glVertex2d(newPosX + width, newPosY); //bottom right
+		glTexCoord2f(1, 1); glVertex2d(newPosX + width, newPosY + height); //top right
+		glTexCoord2f(0, 1); glVertex2d(newPosX, newPosY + height);//top left
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 	}
+	glPopMatrix();
 
 }
 
@@ -86,25 +87,7 @@ void Entity::AABB(Entity& ent)
 {
 	collideX = false;
 	collideY = false;
-//Colliding when the entity is platform
-	//if (typeid(ent) == typeid(Platform)) {
-	//	if (newPosX < (ent.getX() + ent.width) &&
-	//		newPosX + 50 > ent.getX() &&
-	//		newPosY < (ent.getY() + ent.height) &&
-	//		newPosY + 50 > ent.getY())
-	//	{
-	//		if (newPosX < (ent.getX() + ent.width) &&
-	//			newPosX + ent.width > ent.getX()) {
-	//			collideX = true;
-	//			
-	//		}
-	//		if (newPosY < (ent.getY() + ent.height) &&
-	//			newPosY + ent.height > ent.getY()) {
-	//			collideY = true;
-	//		}
-	//	}
-	//}
-	//else {
+	collideAbove = false;
 //Collision with every entity
 	if (newPosX < (ent.getX() + ent.width) &&
 		newPosX + width > ent.getX() &&
@@ -130,15 +113,18 @@ void Entity::AABB(Entity& ent)
 		}
 
 		//player is below
-		else if ((oldPosY + height) >= ent.getY() - 0.1) {
+		else if ((oldPosY + height) >= ent.getY() - 0.5) {
 			//std::cout << "collide head" << std::endl;
 			collideY = true;
+			collideAbove = true;
+			
 		}
 
 	}
 	
 	AABBResponse();
 }
+
 
 void Entity::AABBResponse()
 {
@@ -152,4 +138,49 @@ void Entity::AABBResponse()
 		velY = 0;
 		newPosY = oldPosY;
 	}
+	if(collideAbove)
+	{
+		velY = 0;
+		newPosY = oldPosY - 0.5;
+	}
+}
+
+
+
+void Entity::platformAABB(Platform& plat)
+{
+	collideX = false;
+	collideY = false;
+	if(newPosX < (plat.getX() + plat.getWidth()) &&
+		newPosX + width > plat.getX() &&
+		newPosY < (plat.getY() + plat.getHeight()) &&
+		newPosY + height > plat.getY())
+	{
+		//player on top of platform
+		if (oldPosY >= (plat.getY() + plat.height) - 0.1) {
+			//std::cout << "collide feet" << std::endl;
+			collideY = true;
+			onBlock = true;
+			newPosX += plat.velX;
+			newPosY += plat.velY;
+		}
+		//left of entity
+		else if ((oldPosX + width) < plat.getX() + 0.02)
+		{
+			//std::cout << "collide right" << std::endl;
+			collideX = true;
+		}
+		//right of entity
+		else if (oldPosX > (plat.getX() + plat.width) - 0.02) {
+			//std::cout << "collide left" << std::endl;
+			collideX = true;
+		}
+
+		//player is below
+		else if ((oldPosY + height) >= plat.getY() - 0.1) {
+			//std::cout << "collide head" << std::endl;
+			collideY = true;
+		}
+	}
+	AABBResponse();
 }
