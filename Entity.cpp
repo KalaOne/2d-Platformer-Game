@@ -44,10 +44,9 @@ void Entity::updatePos(float deltaTime)
 }
 
 //Draws entity
-void Entity::drawEntity(bool enemy, float deltaTime) 
+void Entity::drawEntity(float deltaTime) 
 {
-	glPushMatrix();
-	if (!enemy) {//player movement and drawing
+	glPushMatrix();//player movement and drawing
 		glColor4f(0, 1, 0,0);
 		updatePos(deltaTime);
 		glEnable(GL_TEXTURE_2D);
@@ -61,23 +60,6 @@ void Entity::drawEntity(bool enemy, float deltaTime)
 		glTexCoord2f(0, 1); glVertex2d(newPosX, newPosY + height);//top left
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
-	}
-	else if(enemy)
-	{
-		//Enemy movement and drawing here.
-		glColor4f(1, 0, 0, 0);
-		glEnable(GL_TEXTURE_2D);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-		glBindTexture(GL_TEXTURE_2D, activeSprite);
-	//add texture to the polygon here.
-		glBegin(GL_POLYGON);
-		glTexCoord2f(0, 0); glVertex2d(newPosX, newPosY);	 //bottom left
-		glTexCoord2f(1, 0); glVertex2d(newPosX + width, newPosY); //bottom right
-		glTexCoord2f(1, 1); glVertex2d(newPosX + width, newPosY + height); //top right
-		glTexCoord2f(0, 1); glVertex2d(newPosX, newPosY + height);//top left
-		glEnd();
-		glDisable(GL_TEXTURE_2D);
-	}
 	glPopMatrix();
 
 }
@@ -125,32 +107,11 @@ void Entity::AABB(Entity& ent)
 	AABBResponse();
 }
 
-
-void Entity::AABBResponse()
-{
-	if(collideX)
-	{
-		velX = 0;
-		newPosX = oldPosX;
-	}
-	if(collideY)
-	{
-		velY = 0;
-		newPosY = oldPosY;
-	}
-	if(collideAbove)
-	{
-		velY = 0;
-		newPosY = oldPosY - 0.5;
-	}
-}
-
-
-
 void Entity::platformAABB(Platform& plat)
 {
 	collideX = false;
 	collideY = false;
+	collideAbove = false;
 	if(newPosX < (plat.getX() + plat.getWidth()) &&
 		newPosX + width > plat.getX() &&
 		newPosY < (plat.getY() + plat.getHeight()) &&
@@ -180,7 +141,27 @@ void Entity::platformAABB(Platform& plat)
 		else if ((oldPosY + height) >= plat.getY() - 0.1) {
 			//std::cout << "collide head" << std::endl;
 			collideY = true;
+			collideAbove = true;
 		}
 	}
 	AABBResponse();
+}
+
+void Entity::AABBResponse()
+{
+	if (collideX)
+	{
+		velX = 0;
+		newPosX = oldPosX;
+	}
+	if (collideY)
+	{
+		velY = 0;
+		newPosY = oldPosY;
+	}
+	if (collideAbove)
+	{
+		velY = 0;
+		newPosY = oldPosY - 0.5;
+	}
 }

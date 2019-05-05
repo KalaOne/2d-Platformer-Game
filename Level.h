@@ -20,6 +20,9 @@ private:
 	bool visible = true;
 	std::vector<Entity> entities;
 	std::vector<Platform> platforms;
+	std::vector<Entity> collectables;
+	std::vector<Entity> spikes;
+
 
 public:
 	int getLevelWidth()

@@ -43,7 +43,7 @@ public:
 
 	void AABBResponse();
 	void updatePos(float deltaTime);
-	void drawEntity(bool enemy,float deltaTime = 0);
+	void drawEntity(float deltaTime = 0);
 	void gravity(float deltaTime);
 	void collision();
 	//void collisionResponse();

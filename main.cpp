@@ -8,7 +8,7 @@
 #include "Level.h"
 #include "Platform.h"
 #include "Player.h"
-
+#include "Enemy.h"
 
 
 using namespace std;
@@ -32,7 +32,9 @@ void update();				//called in winmain to update variables
 
 Level level;
 Player player(50,0, 49, 49); // keep in mind each field/tile size is 50. x=1;
-Entity enemy1(300, 0, 25, 25);
+Entity enemy(300, 0, 25, 25);
+Enemy enemy1(200, 0, 25, 25); // closest to left
+Enemy enemy2(1200, 600, 25, 25);
 Platform plat1(500, 50, 150, 20);
 Platform plat2(250, 25, 100, 30);
 vector<Entity> allEntities;
@@ -133,12 +135,12 @@ void display()
 	oldTime = newTime;
 	camera();
 	
-	//plat1.drawPlatform(1500, 1, 0, dt);
-	//plat2.drawPlatform(2000, 0, 1, dt);
 
 	level.drawLevel(1, dt);
-	player.drawEntity(0,dt);
-	enemy1.drawEntity(1,dt);
+	player.drawEntity(dt);
+	enemy.drawEntity(dt);
+
+	enemy1.drawEnemy(1, 50, dt);
 
 	//player collides with everything else.
 	for(Entity ent : allEntities)
@@ -175,8 +177,8 @@ void init()
 {
 	glClearColor(0.0,0.0,0.0,1.0);						//sets the clear colour to yellow
 	player.activeSprite = loadPNG("Assets/platform_gfx/hero/idle.png");
+	enemy.activeSprite = loadPNG("Assets/platform_gfx/baddies/Totem_stand.png");
 	enemy1.activeSprite = loadPNG("Assets/platform_gfx/baddies/Totem_stand.png");
-
 	//glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
