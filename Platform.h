@@ -10,13 +10,13 @@
 class Platform : public Entity
 {
 private:
-	int currentDistance = 0;
-	bool moveX = true, moveY = true, moveRight = true;
+	int pos = 0;
+	bool moveUp = true, moveRight = true;
 	float newPosX = 0.0, newPosY = 0.0;
-	float platformVelX = 0.01, platformVelY = 0.01;
+	float platformVelX = 0.5, platformVelY = 0.5;
 public:
 
-	Platform(float xPos, float yPos, float w, float h) : Entity(xPos, yPos, w, h)
+	Platform(float xPos, float yPos, float w, float h, char* texturePath) : Entity(xPos, yPos, w, h, texturePath)
 	{
 		newPosX = xPos;
 		newPosY = yPos;
@@ -36,9 +36,9 @@ public:
 
 	
 
-	void updatePosX(int travelDistance, bool right, float dt);
-	void updatePosY(int travelDistance, bool up, float dt);
-	void drawPlatform(int travelDistance, bool x, bool y, float dt);
-	void drawPlatFromMap(float dt);
+	void updatePosX(int travelDistance, float dt);
+	void updatePosY(int travelDistance, float dt);
+	//void drawPlatform(int travelDistance, bool x, bool y, float dt);
+	//void drawPlatFromMap(float dt);
 	
 };

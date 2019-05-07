@@ -7,7 +7,7 @@ class Player : public Entity
 
 public:
 
-	Player(float x, float y, float w, float h) : Entity(x, y, w, h){}
+	Player(float x, float y, float w, float h, char* texturePath) : Entity(x, y, w, h, texturePath){}
 
 	bool isGrounded()
 	{

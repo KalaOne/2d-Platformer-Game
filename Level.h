@@ -18,10 +18,13 @@ private:
 	std::string level3 = "";
 	bool colliding = false;
 	bool visible = true;
-	std::vector<Entity> entities;
-	std::vector<Platform> platforms;
-	std::vector<Entity> collectables;
-	std::vector<Entity> spikes;
+	std::vector<Entity*> entities;
+	std::vector<Platform*> platforms;
+	std::vector<Platform*> platUp;
+	std::vector<Platform*> platRight;
+	std::vector<Platform*> movingPlatforms;
+	std::vector<Entity*> collectables;
+	std::vector<Entity*> spikes;
 
 
 public:
@@ -47,16 +50,32 @@ public:
 			visible = false;
 	}
 
-	std::vector<Platform> getPlatformVector()
+
+	std::vector<Platform*> getPlatformVector()
 	{
 		return platforms;
 	}
-	std::vector<Entity> getEntityVector()
+	std::vector<Platform*> getMovingPlatforms()
+	{
+		movingPlatforms.insert(movingPlatforms.end(), platUp.begin(), platUp.end());
+		movingPlatforms.insert(movingPlatforms.end(), platRight.begin(), platRight.end());
+		return movingPlatforms;
+	}
+	std::vector<Entity*> getEntityVector()
 	{
 		return entities;
+	}
+	std::vector<Entity*> getSpikesVector()
+	{
+		return spikes;
+	}
+	std::vector<Entity*> getCollectablesVector()
+	{
+		return collectables;
 	}
 	
 	char getTile(int x, int y);
 	void generateLevel(int level);
-	void drawLevel(int level,float dt);
+	void drawLevel(float dt);
+	void generateTiles();
 };

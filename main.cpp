@@ -2,13 +2,15 @@
 //and draws a spinning rectangle
 
 //#include "Platform.h"
+
 #include "Image_Loading/nvImage.h"
 #include <vector>
-#include "Entity.h"
 #include "Level.h"
+#include "Entity.h"
 #include "Platform.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "windows.h"
 
 
 using namespace std;
@@ -27,18 +29,47 @@ void display();				//called in winmain to draw everything to the screen
 void reshape(int width, int height);				//called when the window is resized
 void init();				//called in winmain when the program starts.
 void keyfunction(unsigned char key, int x, int y);
-void update();				//called in winmain to update variables
+void update();				//called in winmain to update variables#
+void texturise();
+GLuint loadPNG(char* name);
 
 
 Level level;
-Player player(50,0, 49, 49); // keep in mind each field/tile size is 50. x=1;
-Entity enemy(300, 0, 25, 25);
-Enemy enemy1(200, 0, 25, 25); // closest to left
-Enemy enemy2(1200, 600, 25, 25);
-Platform plat1(500, 50, 150, 20);
-Platform plat2(250, 25, 100, 30);
-vector<Entity> allEntities;
-vector<Platform> platforms;
+Player player(50,0, 49, 49, "Assets/platform_gfx/hero/hero.png"); // keep in mind each field/tile size is 50. x=1;
+Enemy enemy1(200, 0, 25, 25, "Assets/platform_gfx/baddies/output.png"); // closest to left
+Enemy enemy2(1200, 600, 25, 25, "Assets/platform_gfx/baddies/Totem_stand.png");
+vector<Entity*> allEntities;
+vector<Entity*> collectables;
+vector<Entity*> spikes;
+vector<Platform*> platforms;
+vector<Platform*> movingPlats;
+
+GLuint loadPNG(char* name)
+{
+	// Texture loading object
+	nv::Image img;
+
+	GLuint myTextureID;
+
+	// Return true on success
+	if (img.loadImageFromFile(name))
+	{
+		glGenTextures(1, &myTextureID);
+		glBindTexture(GL_TEXTURE_2D, myTextureID);
+		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+		glTexImage2D(GL_TEXTURE_2D, 0, img.getInternalFormat(), img.getWidth(), img.getHeight(), 0, img.getFormat(), img.getType(), img.getLevel(0));
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
+	}
+
+	else
+		std::cout << "Failed to load texture. End of the world" << std::endl;;
+
+	return myTextureID;
+}
 
 void camera() {
 
@@ -73,6 +104,11 @@ void keyOperations() {
 	if (keyStates[27]) {
 		exit(0);
 	}
+	if(keyStates['r'])
+	{
+		player.newPosX = 50;
+		player.newPosY = 0;
+	}
 	if (keyStates['w']) {
 		if (player.isGrounded() || player.isOnBlock()) {
 			//player.posY += 0.1;
@@ -98,33 +134,6 @@ void keyOperations() {
 	}
 }
 
-GLuint loadPNG(char* name)
-{
-	// Texture loading object
-	nv::Image img;
-
-	GLuint myTextureID;
-
-	// Return true on success
-	if (img.loadImageFromFile(name))
-	{
-		glGenTextures(1, &myTextureID);
-		glBindTexture(GL_TEXTURE_2D, myTextureID);
-		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-		glTexImage2D(GL_TEXTURE_2D, 0, img.getInternalFormat(), img.getWidth(), img.getHeight(), 0, img.getFormat(), img.getType(), img.getLevel(0));
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
-	}
-
-	else
-		cout << "Failed to load texture. End of the world" << endl;;
-
-	return myTextureID;
-}
-
 void display()																	
 {	
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -136,25 +145,34 @@ void display()
 	camera();
 	
 
-	level.drawLevel(1, dt);
+	level.drawLevel(dt);
 	player.drawEntity(dt);
-	enemy.drawEntity(dt);
+	//enemy.drawEntity(dt);
 
-	enemy1.drawEnemy(1, 50, dt);
-
-	//player collides with everything else.
-	for(Entity ent : allEntities)
-	{
-		player.AABB(ent);
-	}
-	for(Platform p : platforms)
-	{
-		player.platformAABB(p);
-	}
+	enemy1.drawEnemy(550, dt);
 	
+	//player collides with everything else.
+	for(Entity* ent : allEntities)
+	{
+		player.AABB(*ent);
+	}
+	for(Platform* p : platforms)
+	{
+		player.platformAABB(*p);
+	}
+	for (Platform* m_plat : movingPlats)
+	{
+		player.platformAABB(*m_plat);
+	}
+	for(Entity* s : spikes)
+	{
+		player.spikeCollision(*s);
+	}
+	enemy1.enemyAABB(player);
 	
 	glFlush();
 	glutSwapBuffers();
+	
 	player.gravity(dt);
 }
 
@@ -176,10 +194,40 @@ void reshape(int width, int height)		// Resize the OpenGL window
 void init()
 {
 	glClearColor(0.0,0.0,0.0,1.0);						//sets the clear colour to yellow
-	player.activeSprite = loadPNG("Assets/platform_gfx/hero/idle.png");
-	enemy.activeSprite = loadPNG("Assets/platform_gfx/baddies/Totem_stand.png");
-	enemy1.activeSprite = loadPNG("Assets/platform_gfx/baddies/Totem_stand.png");
-	//glEnable(GL_BLEND);
+
+	level.generateLevel(2);
+	allEntities = level.getEntityVector();
+	platforms = level.getPlatformVector();
+	movingPlats = level.getMovingPlatforms();
+	collectables = level.getCollectablesVector();
+	spikes = level.getSpikesVector();
+
+	player.texturise(loadPNG(player.entityTexture.texturePath));
+	enemy1.texturise(loadPNG(enemy1.entityTexture.texturePath));
+
+	for (Entity* entity : allEntities)
+	{
+		entity->texturise(loadPNG(entity->entityTexture.texturePath));
+	}
+	for (Entity* spike : spikes)
+	{
+		spike->texturise(loadPNG(spike->entityTexture.texturePath));
+	}
+	for (Entity* food : collectables)
+	{
+		food->texturise(loadPNG(food->entityTexture.texturePath));
+	}
+	for (Platform* plat : platforms)
+	{
+		plat->texturise(loadPNG(plat->entityTexture.texturePath));
+	}
+	for (Platform* m_plat : movingPlats)
+	{
+		m_plat->texturise(loadPNG(m_plat->entityTexture.texturePath));
+	}
+
+
+	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
@@ -202,6 +250,7 @@ int main(int argc, char **argv)
 	keyStates['a'] = false;
 	keyStates['d'] = false;
 	keyStates[27] = false;
+	keyStates['r'] = false;
 	
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowSize(screenWidth, screenHeight);
@@ -218,10 +267,6 @@ int main(int argc, char **argv)
 	//add keyboard callback.
 	glutKeyboardFunc(keyDown);
 	glutKeyboardUpFunc(keyUp);
-
-	level.generateLevel(1);
-	allEntities = level.getEntityVector();
-	platforms = level.getPlatformVector();
 
 	glutMainLoop();
 	

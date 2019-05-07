@@ -1,28 +1,22 @@
 #include "Platform.h"
 #include "Entity.h"
-#include "Player.h"
 #include <typeinfo>
-
+#include "Player.h"
 
 void Entity::updatePos(float deltaTime)
 {
 	oldPosX = newPosX;
 	oldPosY = newPosY;
 
-	if (velX > 0.6) //incrementing by 0.2
-		velX = 0.6;
-	if (velX < -0.6) //incrementing by 0.2
-		velX = -0.6;
+	if (velX > 1) //incrementing by 0.5
+		velX = 1;
+	if (velX < -1) //incrementing by 0.5
+		velX = -1;
 	if (velY > 6) //incrementing by 2
 		velY = 6;
 
 	newPosX += velX * deltaTime;
 	newPosY += velY * deltaTime * 0.5;
-	//system("cls");
-	//std::cout << newPosX << " X" << std::endl;
-	//std::cout << newPosY << " Y" << std::endl;
-	//collision();
-	//collisionResponse(oldPosX, oldPosY);
 	//reducing velocity when moving right
 	if (rPressed == false) {
 		velX += -0.025 * deltaTime;
@@ -47,12 +41,11 @@ void Entity::updatePos(float deltaTime)
 void Entity::drawEntity(float deltaTime) 
 {
 	glPushMatrix();//player movement and drawing
-		glColor4f(0, 1, 0,0);
+		glColor4f(0, 1, 0,0.5);
 		updatePos(deltaTime);
 		glEnable(GL_TEXTURE_2D);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-		glBindTexture(GL_TEXTURE_2D, activeSprite);
-	//add texture to the polygon here.
+		glBindTexture(GL_TEXTURE_2D, entityTexture.activeSprite);
 		glBegin(GL_POLYGON);
 		glTexCoord2f(0, 0); glVertex2d(newPosX, newPosY);	 //bottom left
 		glTexCoord2f(1, 0); glVertex2d(newPosX + width, newPosY); //bottom right
@@ -64,6 +57,10 @@ void Entity::drawEntity(float deltaTime)
 
 }
 
+void Entity::texturise(GLuint texture)
+{
+	this->entityTexture.activeSprite = texture;
+}
 
 void Entity::AABB(Entity& ent)
 {
@@ -147,6 +144,33 @@ void Entity::platformAABB(Platform& plat)
 	AABBResponse();
 }
 
+void Entity::enemyAABB(Player& p)
+{
+	collideEnemy = false;
+	//Collision with every entity
+	if (newPosX < (p.getX() + p.width) &&
+		newPosX + width > p.getX() &&
+		newPosY < (p.getY() + p.height) &&
+		newPosY + height > p.getY())
+	{
+		collideEnemy = true;
+		std::cout << "Bam!" << std::endl;
+	}
+
+	AABBResponse();
+}
+
+void Entity::spikeCollision(Entity& s)
+{
+	if (newPosX < (s.getX() + s.width) &&
+		newPosX + width > s.getX() &&
+		newPosY < (s.getY() + s.height))
+	{
+		newPosX = 50;
+		newPosY = 0;
+	}
+}
+
 void Entity::AABBResponse()
 {
 	if (collideX)
@@ -163,5 +187,10 @@ void Entity::AABBResponse()
 	{
 		velY = 0;
 		newPosY = oldPosY - 0.5;
+	}
+	if(collideEnemy)
+	{
+		velX *= 0.5;
+		velY *= 0.5;
 	}
 }

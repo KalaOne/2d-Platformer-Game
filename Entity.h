@@ -1,12 +1,20 @@
 #pragma once
 #include "GL\freeglut.h"
+
 #include <math.h>
 #include <iostream>
 #include <chrono>
 #include <string>
 
-
+class Player;
 class Platform;
+
+struct Texture {
+	GLuint activeSprite;
+	char* texturePath;
+};
+
+
 
 class Entity {
 public:
@@ -15,20 +23,22 @@ public:
 	float newPosX, newPosY;
 	bool lPressed, rPressed;
 	bool collideX = false, collideY = false, collideAbove = false;
+	bool collideEnemy = false;
 	float width, height;
 	bool grounded = true;
 	bool onBlock = false;
 
-	GLuint activeSprite;
-
+	Texture entityTexture;
+	
 	bool debug = false;
-	//Constructor for positioning the entity
 
-	Entity(float x, float y, float w, float h) {
+	//Constructor for positioning the entity
+	Entity(float x, float y, float w, float h, char* texturePath) {
 		newPosX = x;
 		newPosY = y;
 		width = w;
 		height = h;
+		this->entityTexture.texturePath = texturePath;
 	}
 
 	float getX()
@@ -41,13 +51,14 @@ public:
 		return newPosY;
 	}
 
+	void texturise(GLuint texture);
 	void AABBResponse();
 	void updatePos(float deltaTime);
 	void drawEntity(float deltaTime = 0);
 	void gravity(float deltaTime);
 	void collision();
-	//void collisionResponse();
 	void AABB(Entity& ent);
 	void platformAABB(Platform& plat);
-	void drawPlatform(bool moveX,bool moveY, float dt);
+	void enemyAABB(Player& p);
+	void spikeCollision(Entity& s);
 };
