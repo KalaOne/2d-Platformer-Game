@@ -23,6 +23,7 @@ private:
 	std::vector<Platform*> platUp;
 	std::vector<Platform*> platRight;
 	std::vector<Platform*> movingPlatforms;
+	std::vector<Entity*> leaves;
 	std::vector<Entity*> collectables;
 	std::vector<Entity*> spikes;
 
@@ -55,12 +56,7 @@ public:
 	{
 		return platforms;
 	}
-	std::vector<Platform*> getMovingPlatforms()
-	{
-		movingPlatforms.insert(movingPlatforms.end(), platUp.begin(), platUp.end());
-		movingPlatforms.insert(movingPlatforms.end(), platRight.begin(), platRight.end());
-		return movingPlatforms;
-	}
+
 	std::vector<Entity*> getEntityVector()
 	{
 		return entities;
@@ -73,7 +69,11 @@ public:
 	{
 		return collectables;
 	}
-	
+	std::vector<Entity*> getLeavesVector()
+	{
+		return leaves;
+	}
+
 	char getTile(int x, int y);
 	void generateLevel(int level);
 	void drawLevel(float dt);

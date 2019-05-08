@@ -9,11 +9,6 @@
 
 class Platform : public Entity
 {
-private:
-	int pos = 0;
-	bool moveUp = true, moveRight = true;
-	float newPosX = 0.0, newPosY = 0.0;
-	float platformVelX = 0.5, platformVelY = 0.5;
 public:
 
 	Platform(float xPos, float yPos, float w, float h, char* texturePath) : Entity(xPos, yPos, w, h, texturePath)

@@ -6,6 +6,8 @@
 #include <chrono>
 #include <string>
 
+
+class MovingPlatform;
 class Player;
 class Platform;
 
@@ -19,16 +21,15 @@ struct Texture {
 class Entity {
 public:
 	float posX = 0, posY = 0, velX = 0, velY = 0;
-	float oldPosX, oldPosY;
-	float newPosX, newPosY;
-	bool lPressed, rPressed;
-	bool collideX = false, collideY = false, collideAbove = false;
-	bool collideEnemy = false;
+	float oldPosX, oldPosY, newPosX, newPosY;
 	float width, height;
-	bool grounded = true;
-	bool onBlock = false;
-
+	bool lPressed, rPressed;
+	bool collideX = false, collideY = false, collideAbove = false, onPlatform = false;
+	bool collideEnemy = false, enemy = false;;
+	bool moveUpPlatform = false, moveRightPlatform = false, moveLeftPlatform = false;
+	bool grounded = true, onBlock = false;
 	Texture entityTexture;
+
 	
 	bool debug = false;
 
@@ -51,6 +52,11 @@ public:
 		return newPosY;
 	}
 
+	bool checkIfEnemy()
+	{
+		return enemy;
+	}
+
 	void texturise(GLuint texture);
 	void AABBResponse();
 	void updatePos(float deltaTime);
@@ -59,6 +65,6 @@ public:
 	void collision();
 	void AABB(Entity& ent);
 	void platformAABB(Platform& plat);
-	void enemyAABB(Player& p);
+	void movingPlatsAABB(MovingPlatform& mp);
 	void spikeCollision(Entity& s);
 };

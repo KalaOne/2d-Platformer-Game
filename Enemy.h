@@ -9,24 +9,12 @@ private:
 	bool right = true;
 public:
 
-	Enemy(int x,int y, int w, int h, char* texturePath) : Entity(x, y, w, h, texturePath) {}
+	Enemy(int x, int y, int w, int h, char* texturePath) : Entity(x, y, w, h, texturePath)
+	{
+		//std::cout << "Creating enemy" << std::endl;
+		this->enemy = true;
+	}
 
-	float getX()
-	{
-		return this->newPosX;
-	}
-	float getY()
-	{
-		return this->newPosX;
-	}
-	int getWidth()
-	{
-		return this->width;
-	}
-	int getHeight()
-	{
-		return this->height;
-	}
 	
 	void updatePos(int distance, float dt);
 	void drawEnemy(int distance, float dt);

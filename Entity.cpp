@@ -2,6 +2,7 @@
 #include "Entity.h"
 #include <typeinfo>
 #include "Player.h"
+#include "MovingPlatform.h"
 
 void Entity::updatePos(float deltaTime)
 {
@@ -54,7 +55,6 @@ void Entity::drawEntity(float deltaTime)
 		glEnd();
 		glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
-
 }
 
 void Entity::texturise(GLuint texture)
@@ -67,40 +67,46 @@ void Entity::AABB(Entity& ent)
 	collideX = false;
 	collideY = false;
 	collideAbove = false;
-//Collision with every entity
+	collideEnemy = false;//Collision with every entity
 	if (newPosX < (ent.getX() + ent.width) &&
 		newPosX + width > ent.getX() &&
 		newPosY < (ent.getY() + ent.height) &&
 		newPosY + height > ent.getY())
 	{
-		//player on top of entity
-		if (oldPosY >= (ent.getY() + ent.height) - 0.1) {
-			//std::cout << "collide feet" << std::endl;
-			collideY = true;
-			onBlock = true;
-		}
-		//left of entity
-		else if ((oldPosX + width) < ent.getX() + 0.02)
+		
+		if (ent.checkIfEnemy()) // if colliding with enemy
 		{
-			//std::cout << "collide right" << std::endl;
-			collideX = true;
+			//std::cout << "Bam!" << std::endl;
+			collideEnemy = true;
 		}
-		//right of entity
-		else if (oldPosX > (ent.getX() + ent.width) - 0.02) {
-			//std::cout << "collide left" << std::endl;
-			collideX = true;
-		}
+		else {
+			//player on top of entity
+			if (oldPosY >= (ent.getY() + ent.height) - 0.1) {
+				//std::cout << "collide feet" << std::endl;
+				collideY = true;
+				onBlock = true;
+			}
+			//left of entity
+			else if ((oldPosX + width) < ent.getX() + 0.02)
+			{
+				//std::cout << "collide right" << std::endl;
+				collideX = true;
+			}
+			//right of entity
+			else if (oldPosX > (ent.getX() + ent.width) - 0.02) {
+				//std::cout << "collide left" << std::endl;
+				collideX = true;
+			}
 
-		//player is below
-		else if ((oldPosY + height) >= ent.getY() - 0.5) {
-			//std::cout << "collide head" << std::endl;
-			collideY = true;
-			collideAbove = true;
-			
-		}
+			//player is below
+			else if ((oldPosY + height) >= ent.getY() - 0.5) {
+				//std::cout << "collide head" << std::endl;
+				collideY = true;
+				collideAbove = true;
 
-	}
-	
+			}
+		}
+	}	
 	AABBResponse();
 }
 
@@ -143,20 +149,57 @@ void Entity::platformAABB(Platform& plat)
 	}
 	AABBResponse();
 }
-
-void Entity::enemyAABB(Player& p)
+void Entity::movingPlatsAABB(MovingPlatform& mp)
 {
-	collideEnemy = false;
-	//Collision with every entity
-	if (newPosX < (p.getX() + p.width) &&
-		newPosX + width > p.getX() &&
-		newPosY < (p.getY() + p.height) &&
-		newPosY + height > p.getY())
+	collideX = false;
+	collideY = false;
+	collideAbove = false;
+	moveUpPlatform = false;
+	moveRightPlatform = false;
+	moveLeftPlatform = false;
+	onPlatform = false;
+	if (newPosX < (mp.getCurrentX() + mp.getWidth()) &&
+		newPosX + width > mp.getCurrentX() &&
+		newPosY < (mp.getCurrentY() + mp.getHeight()) &&
+		newPosY + height > mp.getCurrentY())
 	{
-		collideEnemy = true;
-		std::cout << "Bam!" << std::endl;
-	}
+		//player on top of platform
+		if (oldPosY >= (mp.getCurrentY() + mp.height) - 0.1) {
+			collideY = true;
+			if (mp.checkMoveUp()) {
+				moveUpPlatform = true;
+				onBlock = true;
+				newPosY += mp.velY;
+			}
+			if (mp.checkMoveRight()) {
+				onBlock = true;
+				velX = mp.velX;
+			}
+			else {
+				//moveLeftPlatform = true;
+				onBlock = true;
+				velX -= mp.velX;
+			}
+		}
+		//left of platform
+		else if ((oldPosX + width) < mp.getCurrentX() + 0.02)
+		{
+			//std::cout << "collide right" << std::endl;
+			collideX = true;
+		}
+		//right of platform
+		else if (oldPosX > (mp.getCurrentX() + mp.width) - 0.02) {
+			//std::cout << "collide left" << std::endl;
+			collideX = true;
+		}
 
+		//player is below
+		else if ((oldPosY + height) >= mp.getCurrentY() - 0.1) {
+			//std::cout << "collide head" << std::endl;
+			collideY = true;
+			collideAbove = true;
+		}
+	}
 	AABBResponse();
 }
 
@@ -190,7 +233,8 @@ void Entity::AABBResponse()
 	}
 	if(collideEnemy)
 	{
-		velX *= 0.5;
-		velY *= 0.5;
+		//std::cout << "Enemy !" << std::endl;
+		velX = velX * 0.5;
+		velY = velY * 0.5;
 	}
 }

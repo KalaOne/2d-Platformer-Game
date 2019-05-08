@@ -2,39 +2,7 @@
 
 
 
-void Platform::updatePosX(int travelDistance, float dt)
-{
-	if (moveRight) {
-		newPosX += platformVelX;
-		pos++;
-		if (pos == travelDistance)
-			moveRight = false;
-	}
-	else
-	{
-		newPosX -= platformVelX;
-		pos--;
-		if (pos == 0)
-			moveRight = true;
-	}
-}
 
-void Platform::updatePosY(int travelDistance, float dt)
-{
-	if(moveUp) {
-		newPosY += platformVelX;
-		pos++;
-		if (pos == travelDistance)
-			moveUp = false;
-	}
-	else
-	{
-	newPosY -= platformVelY;
-	pos--;
-	if (pos == 0)
-		moveUp = true;
-	}
-}
 //
 //void Platform::drawPlatform(int travelDistance, bool x, bool y, float dt)
 //{

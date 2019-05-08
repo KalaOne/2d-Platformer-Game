@@ -15,6 +15,6 @@ void Player::gravity(float deltaTime)
 		newPosY = 0; //dont allow player to fall below ground
 		velY = 0;
 	}
-	if (onBlock)
-		velY = 0;
+	//if (onBlock)
+		//velY = 0;
 }

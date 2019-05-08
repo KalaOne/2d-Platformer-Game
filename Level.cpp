@@ -25,20 +25,24 @@ void Level::drawLevel(float dt)
 	{
 		o->drawEntity(dt);
 	}
+	for (Entity* l : leaves)
+	{
+		l->drawEntity(dt);
+	}
 	for(Platform* p : platforms)
 	{
 		p->drawEntity(dt);
 	}
-	for (Platform* u : platUp)
+	/*for (Platform* u : platUp)
 	{
-		u->updatePosX(150, dt);
+		u->updatePosY(150, dt);
 		u->drawEntity(dt);
 	}
 	for (Platform* r : platRight)
 	{
-		r->updatePosY(150, dt);
+		r->updatePosX(150, dt);
 		r->drawEntity(dt);
-	}
+	}*/
 }
 
 void Level::generateLevel(int level) {
@@ -87,8 +91,8 @@ void Level::generateLevel(int level) {
 		level1 += "@------------------------------------------------@";
 		level1 += "@--------------------------==--------------====--@";
 		level1 += "@------------------------------------------=-----@";
-		level1 += "@-----o------------------------r-------u--==-----@";
-		level1 += "@--------------------------sss-------------------@";//y=20,x=51
+		level1 += "@-----o------------------------p-------p--==-----@";
+		level1 += "@------------------------------------m-----------@";//y=20,x=51
 		std::reverse(level1.begin(), level1.end());
 		generateTiles();
 	}
@@ -114,6 +118,32 @@ void Level::generateLevel(int level) {
 		level1 += "@--------------------------------------=--==-----@";
 		level1 += "@-----o--------------------------------=--=------@";
 		level1 += "@--------------------------sss---------=--====---@";//y=20,x=51
+
+		std::reverse(level1.begin(), level1.end());
+		generateTiles();
+	}
+	else if (level == 4)
+	{
+		level1 = "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@";
+		level1 += "@-----------------=---------------=--------------@";
+		level1 += "@-----------------=----========---=--------------@";
+		level1 += "@-----------------=---------------=--------------@";
+		level1 += "@------------------------------------------------@";
+		level1 += "@------------------------------------------------@";
+		level1 += "@------------------------------------------------@";
+		level1 += "@--------------==--------------------------------@";
+		level1 += "@-------------=--=-------------------------------@";
+		level1 += "@--------------==------------o-------------------@";
+		level1 += "@-------------------------------------------o----@";
+		level1 += "@---------------------------====-----------------@";
+		level1 += "@--------------------------------------------=---@";
+		level1 += "@------------------------------------------------@";
+		level1 += "@------------------------------------------------@";
+		level1 += "@------------------------------------------------@";
+		level1 += "@------------------------------------------------@";
+		level1 += "@------------------------------------------------@";
+		level1 += "@------------------------------------------------@";
+		level1 += "@------------------------------------m-----------@";//y=20,x=51
 
 		std::reverse(level1.begin(), level1.end());
 		generateTiles();
@@ -148,23 +178,18 @@ void Level::generateTiles()
 					  break;
 
 			case 'p': {
-				Platform* plat = new Platform(x * tileWidth, y * tileHeight, 150, 20, "Assets/platform_gfx/tiles/block2.png");
+				Platform* plat = new Platform(x * tileWidth, y * tileHeight, 100, 20, "Assets/platform_gfx/tiles/block2.png");
 				platforms.push_back(plat);
-			}
-					  break;
-			case 'r': {
-				Platform* r_plat = new Platform(x * tileWidth, y * tileHeight, 150, 20, "Assets/platform_gfx/tiles/block2.png");
-				platRight.push_back(r_plat);
-			}
-					  break;
-			case 'u': {
-				Platform* u_plat = new Platform(x * tileWidth, y * tileHeight, 150, 20, "Assets/platform_gfx/tiles/block2.png");
-				platUp.push_back(u_plat);
 			}
 					  break;
 			case 's': {
 				Entity* spike = new Entity(x * tileWidth, y * tileHeight, 50, 20, "Assets/platform_gfx/tiles/spikes1.png");
 				spikes.push_back(spike);
+			}
+					  break;
+			case 'm': {
+				Entity* leaf = new Entity(x * tileWidth, y * tileHeight, 50, 50, "Assets/platform_gfx/tiles/door.png");
+				leaves.push_back(leaf);
 			}
 					  break;
 			}
