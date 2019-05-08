@@ -26,6 +26,14 @@ float dt;
 int levels = 4;
 bool enemyCollide = false;
 
+
+struct Time
+{
+	int mm = 0, ss = 0, ms = 0;
+	string min = "", sec = "", msec = "";
+};
+
+Time t;
 vector<Entity*> tiles;
 vector<Entity*> collectables;
 vector<Entity*> spikes;
@@ -34,7 +42,7 @@ vector<Platform*> platforms;
 vector<MovingPlatform*> movingPlatsRight;
 vector<MovingPlatform*> movingPlatsUp;
 vector<Enemy*> enemies;
-
+string timeString = "00:00:00";
 //OPENGL FUNCTION PROTOTYPES
 void display();				//called in winmain to draw everything to the screen
 void reshape(int width, int height);				//called when the window is resized
@@ -43,20 +51,48 @@ void keyfunction(unsigned char key, int x, int y);
 void update();				//called in winmain to update variables#
 void texturise();
 GLuint loadPNG(char* name);
+void displayTimer();
 
 
 Level level;
 Player player(50,0, 49, 49, "Assets/platform_gfx/hero/hero.png"); // keep in mind each field/tile size is 50. x=1;
-Enemy enemy1(200, 0, 25, 25, "Assets/platform_gfx/baddies/output.png"); // closest to left
-Enemy enemy2(1200, 600, 25, 25, "Assets/platform_gfx/baddies/output.png");
+Enemy enemy1(200, 0, 50, 50, "Assets/platform_gfx/baddies/output.png"); // closest to left
+Enemy enemy2(1200, 600, 50, 50, "Assets/platform_gfx/baddies/output.png");
 
 MovingPlatform pR1(500,50,150,20,1500,"Assets/platform_gfx/tiles/block2.png");
 //MovingPlatform pR2(300,100,150,20, 150,"Assets/platform_gfx/tiles/block2.png");
 //MovingPlatform pR3(1200, 50, 150,20,100, "Assets/platform_gfx/tiles/block2.png");
-MovingPlatform pU1(300,10,150,20,600, "Assets/platform_gfx/tiles/block2.png");
+//MovingPlatform pU1(300,10,150,20,600, "Assets/platform_gfx/tiles/block2.png");
 //MovingPlatform pU2(300,50,150,20,200, "Assets/platform_gfx/tiles/block2.png");
 
 
+//function to display the timer
+void displayTimer(string str, float x, float y)
+{
+	glRasterPos2f(x, y);
+	for(char c : str){
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c);
+	}
+}
+
+void timer()
+{
+	t.ms++;
+	if(t.ms >= 1000)
+	{
+		t.ss++;
+		if(t.ss >= 60)
+		{
+			t.mm++;
+			t.ss = 0;
+		}
+		t.ms = 0;
+	}
+	//Doesn't turn them into strings. Or at least It doesn't update the display string....
+	t.msec = to_string(t.ms);
+	t.sec = to_string(t.ss);
+	t.min = to_string(t.mm);
+}
 
 GLuint loadPNG(char* name)
 {
@@ -156,6 +192,8 @@ void display()
 	float newTime = glutGet(GLUT_ELAPSED_TIME);
 	dt = (newTime - oldTime) * 0.75;
 	oldTime = newTime;
+
+	
 	camera();
 	
 	for (Enemy* e : enemies)
@@ -163,7 +201,7 @@ void display()
 		player.AABB(*e);
 	}
 	level.drawLevel(dt);
-	player.drawEntity(dt);
+	
 	enemy1.drawEnemy(550, dt);
 
 	//drawing and updating moving platforms
@@ -198,12 +236,23 @@ void display()
 	{
 		player.spikeCollision(*s);
 	}
-	
+	for(Entity* c : collectables)
+	{
+		if(player.AABB(*c))
+		level.setTile(c->getX(), c->getY());
+	}
 
+	player.drawEntity(dt);
+
+	glColor3f(1, 1, 1);
+	displayTimer(timeString, camX + 625, camY + 450);
+	//cout << t.min << ":" << t.sec << ":" << t.msec << endl;
 	glFlush();
 	glutSwapBuffers();
 	
 	player.gravity(dt);
+
+	
 }
 
 void reshape(int width, int height)		// Resize the OpenGL window
@@ -224,7 +273,6 @@ void reshape(int width, int height)		// Resize the OpenGL window
 void init()
 {
 	glClearColor(0.0,0.0,0.0,1.0);						//sets the clear colour to yellow
-
 	level.generateLevel(levels);
 	tiles = level.getEntityVector();
 	platforms = level.getPlatformVector();
@@ -236,7 +284,7 @@ void init()
 	movingPlatsRight.push_back(&pR1);
 	//movingPlatsRight.push_back(&pR2);
 	//movingPlatsRight.push_back(&pR3);
-	movingPlatsUp.push_back(&pU1);
+	//movingPlatsUp.push_back(&pU1);
 	//movingPlatsUp.push_back(&pU2);
 
 	//Texturing all entities
@@ -314,7 +362,6 @@ int main(int argc, char **argv)
 	//add keyboard callback.
 	glutKeyboardFunc(keyDown);
 	glutKeyboardUpFunc(keyUp);
-
 	glutMainLoop();
 	
 	return 0;

@@ -78,4 +78,5 @@ public:
 	void generateLevel(int level);
 	void drawLevel(float dt);
 	void generateTiles();
+	void setTile(int x, int y);
 };

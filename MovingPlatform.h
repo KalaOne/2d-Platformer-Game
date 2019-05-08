@@ -49,6 +49,14 @@ public:
 		return moveRight;
 	}
 
+	float getCurrentVelX()
+	{
+		return platformVelX;
+	}
+	float getCurrentVelY()
+	{
+		return platformVelY;
+	}
 	void drawPlatformRight(float dt);
 	void drawPlatformUp(float dt);
 	void updatePosX(int travelDistance, float dt);

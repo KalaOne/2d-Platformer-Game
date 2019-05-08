@@ -62,52 +62,66 @@ void Entity::texturise(GLuint texture)
 	this->entityTexture.activeSprite = texture;
 }
 
-void Entity::AABB(Entity& ent)
+bool Entity::AABB(Entity& ent)
 {
+
 	collideX = false;
 	collideY = false;
 	collideAbove = false;
 	collideEnemy = false;//Collision with every entity
-	if (newPosX < (ent.getX() + ent.width) &&
-		newPosX + width > ent.getX() &&
-		newPosY < (ent.getY() + ent.height) &&
-		newPosY + height > ent.getY())
+	if(ent.isCollectable)
 	{
-		
-		if (ent.checkIfEnemy()) // if colliding with enemy
+		if (newPosX < (ent.getX() + ent.width) &&
+			newPosX + width > ent.getX() &&
+			newPosY < (ent.getY() + ent.height) &&
+			newPosY + height > ent.getY())
 		{
-			//std::cout << "Bam!" << std::endl;
-			collideEnemy = true;
+			return true;
 		}
-		else {
-			//player on top of entity
-			if (oldPosY >= (ent.getY() + ent.height) - 0.1) {
-				//std::cout << "collide feet" << std::endl;
-				collideY = true;
-				onBlock = true;
-			}
-			//left of entity
-			else if ((oldPosX + width) < ent.getX() + 0.02)
+	}
+	else {
+		if (newPosX < (ent.getX() + ent.width) &&
+			newPosX + width > ent.getX() &&
+			newPosY < (ent.getY() + ent.height) &&
+			newPosY + height > ent.getY())
+		{
+
+			if (ent.checkIfEnemy()) // if colliding with enemy
 			{
-				//std::cout << "collide right" << std::endl;
-				collideX = true;
+				//std::cout << "Bam!" << std::endl;
+				collideEnemy = true;
 			}
-			//right of entity
-			else if (oldPosX > (ent.getX() + ent.width) - 0.02) {
-				//std::cout << "collide left" << std::endl;
-				collideX = true;
-			}
+			else {
+				//player on top of entity
+				if (oldPosY >= (ent.getY() + ent.height) - 0.1) {
+					//std::cout << "collide feet" << std::endl;
+					collideY = true;
+					onBlock = true;
+				}
+				//left of entity
+				else if ((oldPosX + width) < ent.getX() + 0.02)
+				{
+					//std::cout << "collide right" << std::endl;
+					collideX = true;
+				}
+				//right of entity
+				else if (oldPosX > (ent.getX() + ent.width) - 0.02) {
+					//std::cout << "collide left" << std::endl;
+					collideX = true;
+				}
 
-			//player is below
-			else if ((oldPosY + height) >= ent.getY() - 0.5) {
-				//std::cout << "collide head" << std::endl;
-				collideY = true;
-				collideAbove = true;
+				//player is below
+				else if ((oldPosY + height) >= ent.getY() - 0.5) {
+					//std::cout << "collide head" << std::endl;
+					collideY = true;
+					collideAbove = true;
 
+				}
 			}
 		}
-	}	
+	}
 	AABBResponse();
+	return false;
 }
 
 void Entity::platformAABB(Platform& plat)
@@ -149,6 +163,7 @@ void Entity::platformAABB(Platform& plat)
 	}
 	AABBResponse();
 }
+
 void Entity::movingPlatsAABB(MovingPlatform& mp)
 {
 	collideX = false;
@@ -172,13 +187,14 @@ void Entity::movingPlatsAABB(MovingPlatform& mp)
 				newPosY += mp.velY;
 			}
 			if (mp.checkMoveRight()) {
+				//rPressed = true;
 				onBlock = true;
-				velX = mp.velX;
+				velX = mp.getCurrentVelX();
 			}
 			else {
-				//moveLeftPlatform = true;
+				//lPressed = true;
 				onBlock = true;
-				velX -= mp.velX;
+				velX -= mp.getCurrentVelX();
 			}
 		}
 		//left of platform

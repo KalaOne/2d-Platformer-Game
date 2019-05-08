@@ -11,6 +11,16 @@ char Level::getTile(int x, int y) {
 		return ' ';
 }
 
+void Level::setTile(int x, int y)
+{
+	for (int i = 0; i < collectables.size(); i++) {
+		if(collectables[i]->getX() == x && collectables[i]->getY() == y)
+		{
+			collectables.erase(collectables.begin()+i);
+		}
+	}
+	
+}
 void Level::drawLevel(float dt)
 {
 	for(Entity* ent : entities)
@@ -141,8 +151,8 @@ void Level::generateLevel(int level) {
 		level1 += "@------------------------------------------------@";
 		level1 += "@------------------------------------------------@";
 		level1 += "@------------------------------------------------@";
-		level1 += "@------------------------------------------------@";
-		level1 += "@------------------------------------------------@";
+		level1 += "@------------------------------------------o-----@";
+		level1 += "@---------------------------------o-----o--------@";
 		level1 += "@------------------------------------m-----------@";//y=20,x=51
 
 		std::reverse(level1.begin(), level1.end());
@@ -172,7 +182,7 @@ void Level::generateTiles()
 					  break;
 
 			case 'o': {
-				Entity* food = new Entity(x * tileWidth, y * tileHeight, 25, 25, "Assets/platform_gfx/tiles/block3.png");
+				Entity* food = new Entity(true,x * tileWidth, y * tileHeight, 25, 25, "Assets/platform_gfx/tiles/block3.png");
 				collectables.push_back(food);
 			}
 					  break;

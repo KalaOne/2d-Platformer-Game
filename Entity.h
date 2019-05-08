@@ -28,6 +28,7 @@ public:
 	bool collideEnemy = false, enemy = false;;
 	bool moveUpPlatform = false, moveRightPlatform = false, moveLeftPlatform = false;
 	bool grounded = true, onBlock = false;
+	bool isCollectable = false;
 	Texture entityTexture;
 
 	
@@ -40,6 +41,15 @@ public:
 		width = w;
 		height = h;
 		this->entityTexture.texturePath = texturePath;
+	}
+
+	Entity(bool collectable, float x, float y, float w, float h, char* texturePath) {
+		newPosX = x;
+		newPosY = y;
+		width = w;
+		height = h;
+		this->entityTexture.texturePath = texturePath;
+		isCollectable = collectable;
 	}
 
 	float getX()
@@ -63,7 +73,7 @@ public:
 	void drawEntity(float deltaTime = 0);
 	void gravity(float deltaTime);
 	void collision();
-	void AABB(Entity& ent);
+	bool AABB(Entity& ent);
 	void platformAABB(Platform& plat);
 	void movingPlatsAABB(MovingPlatform& mp);
 	void spikeCollision(Entity& s);
