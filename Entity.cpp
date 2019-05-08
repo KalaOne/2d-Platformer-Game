@@ -238,7 +238,8 @@ void Entity::spikeCollision(Entity& s)
 {
 	if (newPosX < (s.getX() + s.width) &&
 		newPosX + width > s.getX() &&
-		newPosY < (s.getY() + s.height))
+		newPosY < (s.getY() + s.height)&&
+		newPosY + height > s.getY())
 	{
 		newPosX = 50;
 		newPosY = 0;

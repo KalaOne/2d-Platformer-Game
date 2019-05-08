@@ -59,21 +59,21 @@ void displayTimer();
 GLuint bg;
 
 Level level;
-Player player(50,0, 49, 49, "Assets/platform_gfx/hero/hero.png"); // keep in mind each field/tile size is 50. x=1;
+Player player(950,550, 49, 49, "Assets/platform_gfx/hero/hero.png"); // keep in mind each field/tile size is 50. x=1;
 Enemy enemy1(200, 0, 50, 50, "Assets/platform_gfx/baddies/output.png"); // closest to left
-Enemy enemy2(1200, 600, 50, 50, "Assets/platform_gfx/baddies/output.png");
+Enemy enemy2(1750, 400, 50, 50, "Assets/platform_gfx/baddies/output.png");
 
-MovingPlatform pR1(500,50,150,20,1500,"Assets/platform_gfx/tiles/block2.png");
-//MovingPlatform pR2(300,100,150,20, 150,"Assets/platform_gfx/tiles/block2.png");
-//MovingPlatform pR3(1200, 50, 150,20,100, "Assets/platform_gfx/tiles/block2.png");
+MovingPlatform pR1(220,250,150,20,1350,"Assets/platform_gfx/tiles/block2.png");
+MovingPlatform pR2(1000,500,50,20, 950,"Assets/platform_gfx/tiles/block2.png");
+MovingPlatform pR3(1600, 175, 30,20,800, "Assets/platform_gfx/tiles/block2.png");
 //MovingPlatform pU1(300,10,150,20,600, "Assets/platform_gfx/tiles/block2.png");
 //MovingPlatform pU2(300,50,150,20,200, "Assets/platform_gfx/tiles/block2.png");
 
 
 //function to display the timer
-void displayTimer(string str, float x, float y)
+void displayTimer(string str, float x, float y,float r, float g, float b)
 {
-	glColor3f(0, 0, 0);
+	glColor3f(r, g, b);
 	glRasterPos2f(x, y);
 	for(char c : str){
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c);
@@ -176,7 +176,7 @@ void addTextures()
 	//Texturing all entities
 	player.texturise(loadPNG(player.entityTexture.texturePath));
 	enemy1.texturise(loadPNG(enemy1.entityTexture.texturePath));
-	enemy2.texturise(loadPNG(enemy1.entityTexture.texturePath));
+	enemy2.texturise(loadPNG(enemy2.entityTexture.texturePath));
 
 	for (Entity* entity : tiles)
 	{
@@ -284,17 +284,6 @@ void display()
 	dt = (newTime - oldTime) * 0.75;
 	oldTime = newTime;
 	currentTime = glutGet(GLUT_ELAPSED_TIME);
-	/*if(currentTime >= 1000)
-	{
-		t.ss++;
-		if (t.ss >= 60)
-		{
-			t.mm++;
-			t.ss = 0;
-		}
-		currentTime = 0;
-	}*/
-
 	
 	camera();
 
@@ -302,35 +291,29 @@ void display()
 	applyCollision();
 
 	enemy1.drawEnemy(550, dt);
+	enemy2.drawEnemy(420, dt);
 
 	//drawing and updating moving platforms
 	//for(MovingPlatform* u_p: movingPlatsUp)
 	//{
 	//	u_p->drawPlatformUp(dt);
 	//}
-
-
+	
 	for (MovingPlatform* r_p : movingPlatsRight)
 	{
 		r_p->drawPlatformRight(dt);
 	}
 
-	
-	
 	player.drawEntity(dt);
 
-	glColor3f(1, 1, 1);
-	displayTimer(to_string(currentTime), camX + 625, camY + 450);
-	displayTimer(to_string(startTime), camX + 625, camY + 350);
-
-	displayTimer(to_string(currentTime - startTime), camX + 625, camY + 250);
+	//displayTimer(to_string(currentTime), camX + 625, camY + 450,0,0,0.5);
+	//displayTimer(to_string(startTime), camX + 625, camY + 350,0, 0.5, 0);
+	displayTimer(to_string(currentTime - startTime), camX + 625, camY + 450,0, 0, 0);
 	//cout << t.min << ":" << t.sec << ":" << t.msec << endl;
 	glFlush();
 	glutSwapBuffers();
 	
-	player.gravity(dt);
-	
-	
+	player.gravity(dt);	
 }
 
 void reshape(int width, int height)		// Resize the OpenGL window
@@ -358,11 +341,11 @@ void init()
 	collectables = level.getCollectablesVector();
 	spikes = level.getSpikesVector();
 	enemies.push_back(&enemy1);
-	//enemies.push_back(&enemy2);
+	enemies.push_back(&enemy2);
 	leaves = level.getLeavesVector();
 	movingPlatsRight.push_back(&pR1);
-	//movingPlatsRight.push_back(&pR2);
-	//movingPlatsRight.push_back(&pR3);
+	movingPlatsRight.push_back(&pR2);
+	movingPlatsRight.push_back(&pR3);
 	//movingPlatsUp.push_back(&pU1);
 	//movingPlatsUp.push_back(&pU2);
 	addTextures();
