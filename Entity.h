@@ -77,4 +77,5 @@ public:
 	void platformAABB(Platform& plat);
 	void movingPlatsAABB(MovingPlatform& mp);
 	void spikeCollision(Entity& s);
+	bool Leaf(Entity& ent);
 };

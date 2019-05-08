@@ -45,15 +45,18 @@ void Entity::drawEntity(float deltaTime)
 		glColor4f(0, 1, 0,0.5);
 		updatePos(deltaTime);
 		glEnable(GL_TEXTURE_2D);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-		glBindTexture(GL_TEXTURE_2D, entityTexture.activeSprite);
-		glBegin(GL_POLYGON);
-		glTexCoord2f(0, 0); glVertex2d(newPosX, newPosY);	 //bottom left
-		glTexCoord2f(1, 0); glVertex2d(newPosX + width, newPosY); //bottom right
-		glTexCoord2f(1, 1); glVertex2d(newPosX + width, newPosY + height); //top right
-		glTexCoord2f(0, 1); glVertex2d(newPosX, newPosY + height);//top left
-		glEnd();
-		glDisable(GL_TEXTURE_2D);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			glBindTexture(GL_TEXTURE_2D, entityTexture.activeSprite);
+			glBegin(GL_POLYGON);
+				glTexCoord2f(0, 0); glVertex2d(newPosX, newPosY);	 //bottom left
+				glTexCoord2f(1, 0); glVertex2d(newPosX + width, newPosY); //bottom right
+				glTexCoord2f(1, 1); glVertex2d(newPosX + width, newPosY + height); //top right
+				glTexCoord2f(0, 1); glVertex2d(newPosX, newPosY + height);//top left
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
+		glDisable(GL_BLEND);
 	glPopMatrix();
 }
 
@@ -64,11 +67,11 @@ void Entity::texturise(GLuint texture)
 
 bool Entity::AABB(Entity& ent)
 {
-
 	collideX = false;
 	collideY = false;
 	collideAbove = false;
-	collideEnemy = false;//Collision with every entity
+	collideEnemy = false;
+	//Collision with every entity
 	if(ent.isCollectable)
 	{
 		if (newPosX < (ent.getX() + ent.width) &&
@@ -124,6 +127,18 @@ bool Entity::AABB(Entity& ent)
 	return false;
 }
 
+bool Entity::Leaf(Entity& ent)
+{
+	if (newPosX < (ent.getX() + (ent.width / 4)) &&
+		newPosX + width > ent.getX() + (ent.width / 4) &&
+		newPosY < (ent.getY() + (ent.height / 4)) &&
+		newPosY + height > ent.getY() + ent.height / 4)
+	{
+		return true;
+	}
+	else 
+		return false;
+}
 void Entity::platformAABB(Platform& plat)
 {
 	collideX = false;

@@ -51,6 +51,15 @@ public:
 			visible = false;
 	}
 
+	int updateLevel(int level)
+	{
+		if(level == 0)
+			return 1;
+		else if(level == 1)
+			return 2;
+		else if (level == 2)
+			return 3;
+	}
 
 	std::vector<Platform*> getPlatformVector()
 	{

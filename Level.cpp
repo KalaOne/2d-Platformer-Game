@@ -43,16 +43,6 @@ void Level::drawLevel(float dt)
 	{
 		p->drawEntity(dt);
 	}
-	/*for (Platform* u : platUp)
-	{
-		u->updatePosY(150, dt);
-		u->drawEntity(dt);
-	}
-	for (Platform* r : platRight)
-	{
-		r->updatePosX(150, dt);
-		r->drawEntity(dt);
-	}*/
 }
 
 void Level::generateLevel(int level) {
@@ -188,7 +178,7 @@ void Level::generateTiles()
 					  break;
 
 			case 'p': {
-				Platform* plat = new Platform(x * tileWidth, y * tileHeight, 100, 20, "Assets/platform_gfx/tiles/block2.png");
+				Platform* plat = new Platform(x * tileWidth, y * tileHeight, 100, 30, "Assets/platform_gfx/tiles/block2.png");
 				platforms.push_back(plat);
 			}
 					  break;

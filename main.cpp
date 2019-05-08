@@ -23,8 +23,10 @@ float grav = 0;
 float camX = 0, camY = 0;
 float oldTime = 0.0;
 float dt;
-int levels = 4;
+int levels = 1;
 bool enemyCollide = false;
+float startTime = 0;
+float currentTime = 0;
 
 
 struct Time
@@ -42,7 +44,7 @@ vector<Platform*> platforms;
 vector<MovingPlatform*> movingPlatsRight;
 vector<MovingPlatform*> movingPlatsUp;
 vector<Enemy*> enemies;
-string timeString = "00:00:00";
+string timeString = t.min + ":" + t.sec + ":" + t.msec;
 //OPENGL FUNCTION PROTOTYPES
 void display();				//called in winmain to draw everything to the screen
 void reshape(int width, int height);				//called when the window is resized
@@ -50,9 +52,11 @@ void init();				//called in winmain when the program starts.
 void keyfunction(unsigned char key, int x, int y);
 void update();				//called in winmain to update variables#
 void texturise();
+void addTextures();
+void applyCollision();
 GLuint loadPNG(char* name);
 void displayTimer();
-
+GLuint bg;
 
 Level level;
 Player player(50,0, 49, 49, "Assets/platform_gfx/hero/hero.png"); // keep in mind each field/tile size is 50. x=1;
@@ -69,29 +73,11 @@ MovingPlatform pR1(500,50,150,20,1500,"Assets/platform_gfx/tiles/block2.png");
 //function to display the timer
 void displayTimer(string str, float x, float y)
 {
+	glColor3f(0, 0, 0);
 	glRasterPos2f(x, y);
 	for(char c : str){
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c);
 	}
-}
-
-void timer()
-{
-	t.ms++;
-	if(t.ms >= 1000)
-	{
-		t.ss++;
-		if(t.ss >= 60)
-		{
-			t.mm++;
-			t.ss = 0;
-		}
-		t.ms = 0;
-	}
-	//Doesn't turn them into strings. Or at least It doesn't update the display string....
-	t.msec = to_string(t.ms);
-	t.sec = to_string(t.ss);
-	t.min = to_string(t.mm);
 }
 
 GLuint loadPNG(char* name)
@@ -158,6 +144,7 @@ void keyOperations() {
 	{
 		player.newPosX = 50;
 		player.newPosY = 0;
+		startTime = currentTime;
 	}
 	if (keyStates['w']) {
 		if (player.isGrounded() || player.isOnBlock()) {
@@ -184,109 +171,8 @@ void keyOperations() {
 	}
 }
 
-void display()																	
-{	
-	glClear(GL_COLOR_BUFFER_BIT);
-	glLoadIdentity();
-	//delta time
-	float newTime = glutGet(GLUT_ELAPSED_TIME);
-	dt = (newTime - oldTime) * 0.75;
-	oldTime = newTime;
-
-	
-	camera();
-	
-	for (Enemy* e : enemies)
-	{
-		player.AABB(*e);
-	}
-	level.drawLevel(dt);
-	
-	enemy1.drawEnemy(550, dt);
-
-	//drawing and updating moving platforms
-	for(MovingPlatform* u_p: movingPlatsUp)
-	{
-		u_p->drawPlatformUp(dt);
-	}
-	for (MovingPlatform* r_p : movingPlatsRight)
-	{
-		r_p->drawPlatformRight(dt);
-	}
-
-
-	//player collides with everything else.
-	for(Entity* ent : tiles)
-	{
-		player.AABB(*ent);
-	}
-	for(Platform* p : platforms)
-	{
-		player.platformAABB(*p);
-	}
-	for (MovingPlatform* m_plat : movingPlatsRight)
-	{
-		player.movingPlatsAABB(*m_plat);
-	}
-	for (MovingPlatform* m_plat : movingPlatsUp)
-	{
-		player.movingPlatsAABB(*m_plat);
-	}
-	for(Entity* s : spikes)
-	{
-		player.spikeCollision(*s);
-	}
-	for(Entity* c : collectables)
-	{
-		if(player.AABB(*c))
-		level.setTile(c->getX(), c->getY());
-	}
-
-	player.drawEntity(dt);
-
-	glColor3f(1, 1, 1);
-	displayTimer(timeString, camX + 625, camY + 450);
-	//cout << t.min << ":" << t.sec << ":" << t.msec << endl;
-	glFlush();
-	glutSwapBuffers();
-	
-	player.gravity(dt);
-
-	
-}
-
-void reshape(int width, int height)		// Resize the OpenGL window
+void addTextures()
 {
-	screenWidth=width; screenHeight = height;           // to ensure the mouse coordinates match 
-	// we will use these values to set the coordinate system
-	
-	glViewport(0,0,width,height);						
-	
-	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
-	glLoadIdentity();									
-
-	gluOrtho2D(0, screenWidth, 0, screenHeight);           // set the coordinate system for the window
-	
-	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
-	glLoadIdentity();									
-}
-void init()
-{
-	glClearColor(0.0,0.0,0.0,1.0);						//sets the clear colour to yellow
-	level.generateLevel(levels);
-	tiles = level.getEntityVector();
-	platforms = level.getPlatformVector();
-	collectables = level.getCollectablesVector();
-	spikes = level.getSpikesVector();
-	enemies.push_back(&enemy1);
-	//enemies.push_back(&enemy2);
-	leaves = level.getLeavesVector();
-	movingPlatsRight.push_back(&pR1);
-	//movingPlatsRight.push_back(&pR2);
-	//movingPlatsRight.push_back(&pR3);
-	//movingPlatsUp.push_back(&pU1);
-	//movingPlatsUp.push_back(&pU2);
-
 	//Texturing all entities
 	player.texturise(loadPNG(player.entityTexture.texturePath));
 	enemy1.texturise(loadPNG(enemy1.entityTexture.texturePath));
@@ -316,14 +202,173 @@ void init()
 	{
 		u_plat->texturise(loadPNG(u_plat->entityTexture.texturePath));
 	}
-	for(Entity* l : leaves)
+	for (Entity* l : leaves)
 	{
 		l->texturise(loadPNG(l->entityTexture.texturePath));
 	}
 
+}
+void applyCollision()
+{
+	//player collides with everything else.
+	for (Enemy* e : enemies)//enemies
+	{
+		player.AABB(*e);
+	}
+	for (Entity* ent : tiles)//world objects
+	{
+		player.AABB(*ent);
+	}
+	for (Platform* p : platforms)//static platforms
+	{
+		player.platformAABB(*p);
+	}
+	for (MovingPlatform* m_plat : movingPlatsRight)//platforms moving x
+	{
+		player.movingPlatsAABB(*m_plat);
+	}
+	for (MovingPlatform* m_plat : movingPlatsUp)//platfroms moving y
+	{
+		player.movingPlatsAABB(*m_plat);
+	}
+	for (Entity* s : spikes)//spikes
+	{
+		player.spikeCollision(*s);
+	}
+	for (Entity* c : collectables)//collectables
+	{
+		if (player.AABB(*c))
+			level.setTile(c->getX(), c->getY());
+	}
+	for(Entity* l : leaves) //exits to next level
+	{
+		if(player.Leaf(*l)){
 
+			cout << "Sleeping...." << endl;
+			level.generateLevel(level.updateLevel(levels));
+			//Sleep(2000);			
+		}
+	}
+}
+
+void drawBackground()
+{
+	
+	glPushMatrix();//player movement and drawing
+	
+	glEnable(GL_TEXTURE_2D);
+	//glEnable(GL_BLEND);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		glBindTexture(GL_TEXTURE_2D, bg);
+		glColor4f(0,0,0,0);
+		glBegin(GL_POLYGON);
+			glTexCoord2f(0, 0); glVertex2d(0, 0);	 //bottom left
+			glTexCoord2f(1, 0); glVertex2d(800, 0); //bottom right
+			glTexCoord2f(1, 1); glVertex2d(800, 600); //top right
+			glTexCoord2f(0, 1); glVertex2d(0, 600);//top left
+		glEnd();
+	glDisable(GL_TEXTURE_2D);
+	//glDisable(GL_BLEND);
+	//glColor3f(1, 1, 1);
+	glPopMatrix();
+}
+void display()																	
+{	
+
+	glClear(GL_COLOR_BUFFER_BIT);
+	glLoadIdentity();
+	drawBackground();
+	//delta time
+	float newTime = glutGet(GLUT_ELAPSED_TIME);
+	dt = (newTime - oldTime) * 0.75;
+	oldTime = newTime;
+	currentTime = glutGet(GLUT_ELAPSED_TIME);
+	/*if(currentTime >= 1000)
+	{
+		t.ss++;
+		if (t.ss >= 60)
+		{
+			t.mm++;
+			t.ss = 0;
+		}
+		currentTime = 0;
+	}*/
+
+	
+	camera();
+
+	level.drawLevel(dt);
+	applyCollision();
+
+	enemy1.drawEnemy(550, dt);
+
+	//drawing and updating moving platforms
+	//for(MovingPlatform* u_p: movingPlatsUp)
+	//{
+	//	u_p->drawPlatformUp(dt);
+	//}
+
+
+	for (MovingPlatform* r_p : movingPlatsRight)
+	{
+		r_p->drawPlatformRight(dt);
+	}
+
+	
+	
+	player.drawEntity(dt);
+
+	glColor3f(1, 1, 1);
+	displayTimer(to_string(currentTime), camX + 625, camY + 450);
+	displayTimer(to_string(startTime), camX + 625, camY + 350);
+
+	displayTimer(to_string(currentTime - startTime), camX + 625, camY + 250);
+	//cout << t.min << ":" << t.sec << ":" << t.msec << endl;
+	glFlush();
+	glutSwapBuffers();
+	
+	player.gravity(dt);
+	
+	
+}
+
+void reshape(int width, int height)		// Resize the OpenGL window
+{
+	screenWidth=width; screenHeight = height;           // to ensure the mouse coordinates match 
+	// we will use these values to set the coordinate system
+	
+	glViewport(0,0,width,height);						
+	
+	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
+	glLoadIdentity();									
+
+	gluOrtho2D(0, screenWidth, 0, screenHeight);           // set the coordinate system for the window
+	
+	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
+	glLoadIdentity();									
+}
+void init()
+{
+	glClearColor(0.0,0.0,0.0,1.0);						//sets the clear colour to yellow
+	level.generateLevel(levels);
+	bg = loadPNG("Assets/background.png");
+	tiles = level.getEntityVector();
+	platforms = level.getPlatformVector();
+	collectables = level.getCollectablesVector();
+	spikes = level.getSpikesVector();
+	enemies.push_back(&enemy1);
+	//enemies.push_back(&enemy2);
+	leaves = level.getLeavesVector();
+	movingPlatsRight.push_back(&pR1);
+	//movingPlatsRight.push_back(&pR2);
+	//movingPlatsRight.push_back(&pR3);
+	//movingPlatsUp.push_back(&pU1);
+	//movingPlatsUp.push_back(&pU2);
+	addTextures();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
 }
 
 
